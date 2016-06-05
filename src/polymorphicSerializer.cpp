@@ -24,7 +24,7 @@ bool PolymorphicSerializer::isPolymorph(const std::string& className) const {
           std::find(m_abstractBaseClasses.begin(), m_abstractBaseClasses.end(), className) != m_abstractBaseClasses.end();
 }
 
-void* PolymorphicSerializer::deserialize(const std::string& className, ReadBuffer& buffer, int version) const {
+void* PolymorphicSerializer::deserialize(const std::string& className, AbstractReadBuffer& buffer, int version) const {
    return m_factories.at(className).deserialize(buffer, version);
 }
 
@@ -61,7 +61,7 @@ bool PolymorphicSerializer::hasCast( const std::string& from
 }
 
 /*
- * Copyright (C) 2010, 2012, 2015 by Gerrit Daniels <gerrit.daniels@gmail.com>
+ * Copyright (C) 2010, 2012, 2015, 2016 by Gerrit Daniels <gerrit.daniels@gmail.com>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without

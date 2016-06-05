@@ -11,7 +11,7 @@ namespace ctrl {
 
 namespace Private {
 
-   class ReadBuffer;
+   class AbstractReadBuffer;
 
    class PolymorphicSerializer {
    private:
@@ -26,7 +26,7 @@ namespace Private {
 
       int registerDeserialize(const std::string& className, const PolymorphicFactory& factory);
       int registerAbstract(const std::string& className);
-      void* deserialize(const std::string& className, ReadBuffer& buffer, int version) const;
+      void* deserialize(const std::string& className, AbstractReadBuffer& buffer, int version) const;
 
       typedef void* (*CastFunction)(void*);
       int registerCast(const std::string& from, const std::string& to, CastFunction func);
@@ -48,7 +48,7 @@ namespace Private {
 #endif // _POLYMORPHICSERIALIZER_H_
 
 /*
- * Copyright (C) 2010, 2012, 2013, 2015 by Gerrit Daniels <gerrit.daniels@gmail.com>
+ * Copyright (C) 2010, 2012, 2013, 2015, 2016 by Gerrit Daniels <gerrit.daniels@gmail.com>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without

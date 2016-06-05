@@ -1,15 +1,15 @@
-#ifndef WRITEBUFFER_H_
-#define WRITEBUFFER_H_
+#ifndef BINARYWRITEBUFFER_H_
+#define BINARYWRITEBUFFER_H_
 
 #include <string>
 #include <memory>
-#include <ctrl/writePointerRepository.h>
+#include <ctrl/buffer/abstractWriteBuffer.h>
 
 namespace ctrl {
 
 namespace Private {
 
-   class WriteBuffer {
+   class BinaryWriteBuffer : public AbstractWriteBuffer {
    public:
       class Impl {
       public:
@@ -47,33 +47,60 @@ namespace Private {
          bool m_owner;
       }; // class Impl
 
-      WriteBuffer(Impl* pimpl);
+      BinaryWriteBuffer(Impl* pimpl);
+
+      virtual void enterObject() throw(Exception);
+      virtual void enterMember(const char* name) throw(Exception);
+      virtual void leaveMember() throw(Exception);
+      virtual void leaveObject() throw(Exception);
+
+      virtual void enterCollection() throw(Exception);
+      virtual void nextCollectionElement() throw(Exception);
+      virtual void leaveCollection() throw(Exception);
+
+      virtual void enterMap() throw(Exception);
+      virtual void enterKey() throw(Exception);
+      virtual void leaveKey() throw(Exception);
+      virtual void enterValue() throw(Exception);
+      virtual void leaveValue() throw(Exception);
+      virtual void leaveMap() throw(Exception);
+
+      virtual void appendVersion(const int& version) throw(Exception);
+      virtual void appendBits(const char* data, long length) throw(Exception);
+      virtual void appendCollectionSize(const std::size_t& size) throw(Exception);
+      virtual void appendPointerId(const int& id) throw(Exception);
+      virtual void appendTypeId(const char* val) throw(Exception);
+
+      virtual void append(const bool& val) throw(Exception);
+      virtual void append(const char& val) throw(Exception);
+      virtual void append(const short& val) throw(Exception);
+      virtual void append(const int& val) throw(Exception);
+      virtual void append(const long& val) throw(Exception);
+      virtual void append(const long long& val) throw(Exception);
+      virtual void append(const unsigned char& val) throw(Exception);
+      virtual void append(const unsigned short& val) throw(Exception);
+      virtual void append(const unsigned int& val) throw(Exception);
+      virtual void append(const unsigned long& val) throw(Exception);
+      virtual void append(const unsigned long long& val) throw(Exception);
+      virtual void append(const float& val) throw(Exception);
+      virtual void append(const double& val) throw(Exception);
+      virtual void append(const std::string& val) throw(Exception);
 
       long length();
       char* getData();
 
-      template <class T>
-      void append(const T& val) {
-         m_pimpl->append(val);
-      }
-
-      void append(const char* data, long length);
-
-      WritePointerRepository& getPointerRepository();
-
    private:
       std::unique_ptr<Impl> m_pimpl;
-      WritePointerRepository m_pointerRepository;
    };
 
 } // namespace Private
 
 } // namespace ctrl
 
-#endif // WRITEBUFFER_H_
+#endif // BINARYWRITEBUFFER_H_
 
 /*
- * Copyright (C) 2010, 2012 by Gerrit Daniels <gerrit.daniels@gmail.com>
+ * Copyright (C) 2010, 2012, 2016 by Gerrit Daniels <gerrit.daniels@gmail.com>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without

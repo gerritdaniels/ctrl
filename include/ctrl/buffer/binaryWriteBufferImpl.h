@@ -1,22 +1,22 @@
 #ifndef WRITEBUFFERIMPL_H_
 #define WRITEBUFFERIMPL_H_
 
-#include <ctrl/writeBuffer.h>
-#include <ctrl/integerConvertor.h>
 #include <ctrl/platformFormat.h>
+#include <ctrl/buffer/binaryWriteBuffer.h>
+#include <ctrl/buffer/integerConvertor.h>
 
 namespace ctrl {
 
 namespace Private {
 
    template <int alignment_, int endian_>
-   class WriteBufferImpl : public WriteBuffer::Impl {
+   class BinaryWriteBufferImpl : public BinaryWriteBuffer::Impl {
    private:
       union FloatUnion { float f; int i; };
       union DoubleUnion { double d; long long l; };
    public:
-      WriteBufferImpl() { }
-      virtual ~WriteBufferImpl() { }
+      BinaryWriteBufferImpl() { }
+      virtual ~BinaryWriteBufferImpl() { }
 
       virtual void append(const bool& val) { appendNumber(val); }
       virtual void append(const char& val) { appendNumber(val); }
@@ -69,7 +69,7 @@ namespace Private {
 #endif // WRITEBUFFERIMPL_H_
 
 /*
- * Copyright (C) 2010, 2012, 2013 by Gerrit Daniels <gerrit.daniels@gmail.com>
+ * Copyright (C) 2010, 2012, 2013, 2016 by Gerrit Daniels <gerrit.daniels@gmail.com>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without

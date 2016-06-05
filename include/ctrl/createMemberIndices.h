@@ -14,7 +14,7 @@ namespace Private {
       enum { isMemberPresent = IsMemberPresent::value };
 
       typedef typename Select< isMemberPresent
-                             , TypeList<MemberInfo<Int2Type<IsMemberPresent::index>, IsMemberPresent::version>, TList_>
+                             , TypeList<Int2Type<IsMemberPresent::index>, TList_>
                              , TList_ >::Result NewTList;
 
       typedef CreateMemberIndicesImpl<NewTList, startLine_, endLine_ - 1, ConcreteClass_> MemberIndicesImpl;
@@ -35,25 +35,25 @@ namespace Private {
       typedef typename MemberIndicesImpl::Indices Indices;
    };
 
-} // namespace Private 
+} // namespace Private
 
 } // namespace ctrl
 
 #endif /* CREATEMEMBERINDICES_H_ */
 
 /*
- * Copyright (C) 2010, 2012 by Gerrit Daniels <gerrit.daniels@gmail.com>
+ * Copyright (C) 2010, 2012, 2016 by Gerrit Daniels <gerrit.daniels@gmail.com>
  * All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met: 
- * 
+ * modification, are permitted provided that the following conditions are met:
+ *
  * 1. Redistributions of source code must retain the above copyright notice, this
- *    list of conditions and the following disclaimer. 
+ *    list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
- *    and/or other materials provided with the distribution. 
- * 
+ *    and/or other materials provided with the distribution.
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE

@@ -1,19 +1,15 @@
-#ifndef READBUFFER_H_
-#define READBUFFER_H_
+#ifndef BINARYREADBUFFER_H_
+#define BINARYREADBUFFER_H_
 
 #include <memory>
 #include <string>
-#include <boost/shared_ptr.hpp>
-#include <boost/weak_ptr.hpp>
-#include <ctrl/readPointerRepository.h>
-#include <ctrl/readRawPointerRepository.h>
-#include <ctrl/exception.h>
+#include <ctrl/buffer/abstractReadBuffer.h>
 
 namespace ctrl {
 
 namespace Private {
 
-   class ReadBuffer {
+   class BinaryReadBuffer : public AbstractReadBuffer {
    public:
       class Impl {
       public:
@@ -38,35 +34,58 @@ namespace Private {
          virtual bool reachedEnd() const = 0;
       }; // class Impl
 
-      ReadBuffer(Impl* pimpl);
+      BinaryReadBuffer(Impl* pimpl);
 
-      template <class T>
-      void read(T& val) throw(Exception) {
-         m_pimpl->read(val);
-      }
+      virtual void enterObject() throw(Exception);
+      virtual void enterMember(const char* name) throw(Exception);
+      virtual void leaveMember() throw(Exception);
+      virtual void leaveObject() throw(Exception);
 
-      void read(char* data, long length) throw(Exception);
+      virtual void enterCollection() throw(Exception);
+      virtual void nextCollectionElement() throw(Exception);
+      virtual void leaveCollection() throw(Exception);
+
+      virtual void enterMap() throw(Exception);
+      virtual void enterKey() throw(Exception);
+      virtual void leaveKey() throw(Exception);
+      virtual void enterValue() throw(Exception);
+      virtual void leaveValue() throw(Exception);
+      virtual void leaveMap() throw(Exception);
+
+      virtual void readVersion(int& version) throw(Exception);
+      virtual void readBits(char* data, long length) throw(Exception);
+      virtual void readCollectionSize(std::size_t& size) throw(Exception);
+      virtual void readPointerId(int& id) throw(Exception);
+      virtual void readTypeId(std::string& val) throw(Exception);
+
+      virtual void read(bool& val) throw(Exception);
+      virtual void read(char& val) throw(Exception);
+      virtual void read(short& val) throw(Exception);
+      virtual void read(int& val) throw(Exception);
+      virtual void read(long& val) throw(Exception);
+      virtual void read(long long& val) throw(Exception);
+      virtual void read(unsigned char& val) throw(Exception);
+      virtual void read(unsigned short& val) throw(Exception);
+      virtual void read(unsigned int& val) throw(Exception);
+      virtual void read(unsigned long& val) throw(Exception);
+      virtual void read(unsigned long long& val) throw(Exception);
+      virtual void read(float& val) throw(Exception);
+      virtual void read(double& val) throw(Exception);
+      virtual void read(std::string& val) throw(Exception);
+
       bool reachedEnd() const;
 
-      ReadPointerRepository<std::shared_ptr, std::weak_ptr>& getStdPointerRepository();
-      ReadPointerRepository<boost::shared_ptr, boost::weak_ptr>& getBoostPointerRepository();
-      ReadRawPointerRepository& getRawPointerRepository();
-
    private:
-      ReadBuffer(const ReadBuffer&);
+      BinaryReadBuffer(const BinaryReadBuffer&);
 
       std::unique_ptr<Impl> m_pimpl;
-      ReadPointerRepository<std::shared_ptr, std::weak_ptr> m_stdPointerRepository;
-      ReadPointerRepository<boost::shared_ptr, boost::weak_ptr> m_boostPointerRepository;
-      ReadRawPointerRepository m_rawPointerRepository;
-
    };
 
 } // namespace Private
 
 } // namespace ctrl
 
-#endif // READBUFFER_H_
+#endif // BINARYREADBUFFER_H_
 
 /*
  * Copyright (C) 2010, 2012, 2016 by Gerrit Daniels <gerrit.daniels@gmail.com>

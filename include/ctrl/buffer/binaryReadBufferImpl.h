@@ -1,8 +1,8 @@
 #ifndef READBUFFERIMPL_H_
 #define READBUFFERIMPL_H_
 
-#include <ctrl/readBuffer.h>
-#include <ctrl/integerConvertor.h>
+#include <ctrl/buffer/binaryReadBuffer.h>
+#include <ctrl/buffer/integerConvertor.h>
 #include <ctrl/platformFormat.h>
 #include <ctrl/exception.h>
 
@@ -11,18 +11,18 @@ namespace ctrl {
 namespace Private {
 
    template <int alignment_, int endian_>
-   class ReadBufferImpl : public ReadBuffer::Impl {
+   class BinaryReadBufferImpl : public BinaryReadBuffer::Impl {
    private:
       union FloatUnion { float f; int i; };
       union DoubleUnion { double d; long long l; };
    public:
-      ReadBufferImpl(const char* data, const long& length)
+      BinaryReadBufferImpl(const char* data, const long& length)
          : m_data(data)
          , m_dataEnd(data + length) {
 
       }
 
-      virtual ~ReadBufferImpl() { }
+      virtual ~BinaryReadBufferImpl() { }
 
       virtual void read(bool& val) throw(Exception) { readNumber(val); }
       virtual void read(char& val) throw(Exception) { readNumber(val); }
@@ -92,7 +92,7 @@ namespace Private {
 #endif // READBUFFERIMPL_H_
 
 /*
- * Copyright (C) 2010, 2012, 2013 by Gerrit Daniels <gerrit.daniels@gmail.com>
+ * Copyright (C) 2010, 2012, 2013, 2016 by Gerrit Daniels <gerrit.daniels@gmail.com>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without

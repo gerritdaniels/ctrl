@@ -19,164 +19,164 @@
 #include <valarray>
 #include <boost/shared_ptr.hpp>
 #include <boost/weak_ptr.hpp>
-#include <ctrl/writeBuffer.h>
+#include <ctrl/buffer/abstractWriteBuffer.h>
 
 namespace ctrl {
 
 namespace Private {
 
    template <class ConcreteClass_>
-   void serialize(const ConcreteClass_& object, WriteBuffer& buffer, int version);
+   void serialize(const ConcreteClass_& object, AbstractWriteBuffer& buffer, int version);
 
    template <size_t size_>
-   void serialize(const std::bitset<size_>& elements, WriteBuffer& buffer, int version);
-   
+   void serialize(const std::bitset<size_>& elements, AbstractWriteBuffer& buffer, int version);
+
    template <class Element_, class Alloc_>
-   void serialize(const std::deque<Element_, Alloc_>& elements, WriteBuffer& buffer, int version);
-   
+   void serialize(const std::deque<Element_, Alloc_>& elements, AbstractWriteBuffer& buffer, int version);
+
    template <class Element_, class Alloc_>
-   void serialize(const std::list<Element_, Alloc_>& elements, WriteBuffer& buffer, int version);
+   void serialize(const std::list<Element_, Alloc_>& elements, AbstractWriteBuffer& buffer, int version);
 
    template <class Key_, class Value_, class Comp_, class Alloc_>
-   void serialize(const std::map<Key_, Value_, Comp_, Alloc_>& elements, WriteBuffer& buffer, int version);
+   void serialize(const std::map<Key_, Value_, Comp_, Alloc_>& elements, AbstractWriteBuffer& buffer, int version);
 
    template <class Key_, class Value_, class Comp_, class Alloc_>
-   void serialize(const std::multimap<Key_, Value_, Comp_, Alloc_>& elements, WriteBuffer& buffer, int version);
-   
+   void serialize(const std::multimap<Key_, Value_, Comp_, Alloc_>& elements, AbstractWriteBuffer& buffer, int version);
+
    template <class Element_, class Container_>
-   void serialize(const std::queue<Element_, Container_>& elements, WriteBuffer& buffer, int version);
-   
+   void serialize(const std::queue<Element_, Container_>& elements, AbstractWriteBuffer& buffer, int version);
+
    template <class Element_, class Container_, class Comp_>
-   void serialize(const std::priority_queue<Element_, Container_, Comp_>& elements, WriteBuffer& buffer, int version);
-   
+   void serialize(const std::priority_queue<Element_, Container_, Comp_>& elements, AbstractWriteBuffer& buffer, int version);
+
    template <class Key_, class Comp_, class Alloc_>
-   void serialize(const std::set<Key_, Comp_, Alloc_>& elements, WriteBuffer& buffer, int version);
-   
+   void serialize(const std::set<Key_, Comp_, Alloc_>& elements, AbstractWriteBuffer& buffer, int version);
+
    template <class Key_, class Comp_, class Alloc_>
-   void serialize(const std::multiset<Key_, Comp_, Alloc_>& elements, WriteBuffer& buffer, int version);
-   
+   void serialize(const std::multiset<Key_, Comp_, Alloc_>& elements, AbstractWriteBuffer& buffer, int version);
+
    template <class Element_, class Container_>
-   void serialize(const std::stack<Element_, Container_>& elements, WriteBuffer& buffer, int version);
-   
+   void serialize(const std::stack<Element_, Container_>& elements, AbstractWriteBuffer& buffer, int version);
+
    template <class Element_, class Alloc_>
-   void serialize(const std::vector<Element_, Alloc_>& elements, WriteBuffer& buffer, int version);
-   
+   void serialize(const std::vector<Element_, Alloc_>& elements, AbstractWriteBuffer& buffer, int version);
+
    template <class Element_, size_t size_>
-   void serialize(const std::array<Element_, size_>& elements, WriteBuffer& buffer, int version);
-   
+   void serialize(const std::array<Element_, size_>& elements, AbstractWriteBuffer& buffer, int version);
+
    template <class Element_, class Alloc_>
-   void serialize(const std::forward_list<Element_, Alloc_>& elements, WriteBuffer& buffer, int version);
-   
+   void serialize(const std::forward_list<Element_, Alloc_>& elements, AbstractWriteBuffer& buffer, int version);
+
    template <class Key_, class Value_, class Hash_, class Pred_, class Alloc_>
    void serialize( const std::unordered_map<Key_, Value_, Hash_, Pred_, Alloc_>& elements
-                 , WriteBuffer& buffer, int version );
-   
+                 , AbstractWriteBuffer& buffer, int version );
+
    template <class Key_, class Value_, class Hash_, class Pred_, class Alloc_>
    void serialize( const std::unordered_multimap<Key_, Value_, Hash_, Pred_, Alloc_>& elements
-                 , WriteBuffer& buffer, int version );
-   
+                 , AbstractWriteBuffer& buffer, int version );
+
    template <class Key_, class Hash_, class Pred_, class Alloc_>
    void serialize( const std::unordered_set<Key_, Hash_, Pred_, Alloc_>& elements
-                 , WriteBuffer& buffer, int version );
-   
+                 , AbstractWriteBuffer& buffer, int version );
+
    template <class Key_, class Hash_, class Pred_, class Alloc_>
    void serialize( const std::unordered_multiset<Key_, Hash_, Pred_, Alloc_>& elements
-                 , WriteBuffer& buffer, int version );
+                 , AbstractWriteBuffer& buffer, int version );
 
    template <class Element_>
-   void serialize(const boost::shared_ptr<Element_>& ptr, WriteBuffer& buffer, int version);
+   void serialize(const boost::shared_ptr<Element_>& ptr, AbstractWriteBuffer& buffer, int version);
 
    template <class Element_>
-   void serialize(const boost::weak_ptr<Element_>& ptr, WriteBuffer& buffer, int version);
+   void serialize(const boost::weak_ptr<Element_>& ptr, AbstractWriteBuffer& buffer, int version);
 
    template <class Element_>
-   void serialize(const std::shared_ptr<Element_>& ptr, WriteBuffer& buffer, int version);
+   void serialize(const std::shared_ptr<Element_>& ptr, AbstractWriteBuffer& buffer, int version);
 
    template <class Element_>
-   void serialize(const std::weak_ptr<Element_>& ptr, WriteBuffer& buffer, int version);
+   void serialize(const std::weak_ptr<Element_>& ptr, AbstractWriteBuffer& buffer, int version);
 
    template <class Element_>
-   void serialize(const std::auto_ptr<Element_>& ptr, WriteBuffer& buffer, int version);
+   void serialize(const std::auto_ptr<Element_>& ptr, AbstractWriteBuffer& buffer, int version);
 
    template <class Element_>
-   void serialize(const std::unique_ptr<Element_>& ptr, WriteBuffer& buffer, int version);
-   
+   void serialize(const std::unique_ptr<Element_>& ptr, AbstractWriteBuffer& buffer, int version);
+
    template <class Element_>
-   void serialize(Element_* ptr, WriteBuffer& buffer, int version);
-   
+   void serialize(Element_* ptr, AbstractWriteBuffer& buffer, int version);
+
    template <class First_, class Second_>
-   void serialize(const std::pair<First_, Second_>& obj, WriteBuffer& buffer, int version);
-   
+   void serialize(const std::pair<First_, Second_>& obj, AbstractWriteBuffer& buffer, int version);
+
    template <class Number_>
-   void serialize(const std::complex<Number_>& obj, WriteBuffer& buffer, int version);
-   
+   void serialize(const std::complex<Number_>& obj, AbstractWriteBuffer& buffer, int version);
+
    template <class Number_>
-   void serialize(const std::valarray<Number_>& obj, WriteBuffer& buffer, int version);
-   
-   template <>
-   void serialize(const bool& value, WriteBuffer& buffer, int version);
+   void serialize(const std::valarray<Number_>& obj, AbstractWriteBuffer& buffer, int version);
 
    template <>
-   void serialize(const char& value, WriteBuffer& buffer, int version);
+   void serialize(const bool& value, AbstractWriteBuffer& buffer, int version);
 
    template <>
-   void serialize(const short& value, WriteBuffer& buffer, int version);
+   void serialize(const char& value, AbstractWriteBuffer& buffer, int version);
 
    template <>
-   void serialize(const int& value, WriteBuffer& buffer, int version);
+   void serialize(const short& value, AbstractWriteBuffer& buffer, int version);
 
    template <>
-   void serialize(const long& value, WriteBuffer& buffer, int version);
+   void serialize(const int& value, AbstractWriteBuffer& buffer, int version);
 
    template <>
-   void serialize(const long long& value, WriteBuffer& buffer, int version);
-   
-   template <>
-   void serialize(const unsigned char& value, WriteBuffer& buffer, int version);
+   void serialize(const long& value, AbstractWriteBuffer& buffer, int version);
 
    template <>
-   void serialize(const unsigned short& value, WriteBuffer& buffer, int version);
+   void serialize(const long long& value, AbstractWriteBuffer& buffer, int version);
 
    template <>
-   void serialize(const unsigned int& value, WriteBuffer& buffer, int version);
+   void serialize(const unsigned char& value, AbstractWriteBuffer& buffer, int version);
 
    template <>
-   void serialize(const unsigned long& value, WriteBuffer& buffer, int version);
-   
-   template <>
-   void serialize(const unsigned long long& value, WriteBuffer& buffer, int version);
-   
-   template <>
-   void serialize(const float& value, WriteBuffer& buffer, int version);
+   void serialize(const unsigned short& value, AbstractWriteBuffer& buffer, int version);
 
    template <>
-   void serialize(const double& value, WriteBuffer& buffer, int version);
+   void serialize(const unsigned int& value, AbstractWriteBuffer& buffer, int version);
 
    template <>
-   void serialize(const std::string& value, WriteBuffer& buffer, int version);
+   void serialize(const unsigned long& value, AbstractWriteBuffer& buffer, int version);
 
    template <>
-   void serialize(const std::wstring& value, WriteBuffer& buffer, int version);
+   void serialize(const unsigned long long& value, AbstractWriteBuffer& buffer, int version);
 
-} // namespace Private 
+   template <>
+   void serialize(const float& value, AbstractWriteBuffer& buffer, int version);
+
+   template <>
+   void serialize(const double& value, AbstractWriteBuffer& buffer, int version);
+
+   template <>
+   void serialize(const std::string& value, AbstractWriteBuffer& buffer, int version);
+
+   template <>
+   void serialize(const std::wstring& value, AbstractWriteBuffer& buffer, int version);
+
+} // namespace Private
 
 } // namespace ctrl
 
 #endif // FORWARDSERIALIZE_H_
 
 /*
- * Copyright (C) 2010, 2012 by Gerrit Daniels <gerrit.daniels@gmail.com>
+ * Copyright (C) 2010, 2012, 2016 by Gerrit Daniels <gerrit.daniels@gmail.com>
  * All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met: 
- * 
+ * modification, are permitted provided that the following conditions are met:
+ *
  * 1. Redistributions of source code must retain the above copyright notice, this
- *    list of conditions and the following disclaimer. 
+ *    list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
- *    and/or other materials provided with the distribution. 
- * 
+ *    and/or other materials provided with the distribution.
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE

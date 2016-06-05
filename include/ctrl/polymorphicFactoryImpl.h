@@ -11,7 +11,7 @@ namespace Private {
    template <class ConcreteClass_>
    class PolymorphicFactoryImpl : public PolymorphicFactory::Impl {
    public:
-      virtual void* deserialize(ctrl::Private::ReadBuffer& buffer, int version) const {
+      virtual void* deserialize(AbstractReadBuffer& buffer, int version) const {
          ConcreteClass_* ptr;
          try {
             ptr = new ConcreteClass_();
@@ -29,7 +29,7 @@ namespace Private {
 #endif // POLYMORPHICFACTORYIMPL_H_
 
 /*
- * Copyright (C) 2012, 2013 by Gerrit Daniels <gerrit.daniels@gmail.com>
+ * Copyright (C) 2012, 2013, 2016 by Gerrit Daniels <gerrit.daniels@gmail.com>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without

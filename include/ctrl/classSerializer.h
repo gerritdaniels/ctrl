@@ -3,6 +3,8 @@
 
 #include <ctrl/forwardDeserialize.h>
 #include <ctrl/forwardSerialize.h>
+#include <ctrl/buffer/abstractReadBuffer.h>
+#include <ctrl/buffer/abstractWriteBuffer.h>
 #include <ctrl/typemanip.h>
 
 namespace ctrl {
@@ -13,26 +15,36 @@ namespace Private {
    class ClassSerializer {
    public:
       template <class Indices_>
-      static void serialize(const ConcreteClass_& object, Indices_ indices, WriteBuffer& buffer, int version) {
-         if (version >= Indices_::Head::version)
-            ctrl::Private::serialize( object.* ConcreteClass_::__getMemberPtr(typename Indices_::Head::Type())
-                                   , buffer, version );
+      static void serialize(const ConcreteClass_& object, Indices_ indices, AbstractWriteBuffer& buffer, int version) {
+         typedef typename ConcreteClass_::template __Version<Indices_::Head::value> Version;
+         int memberVersion = Version::version;
+         if (version >= memberVersion) {
+            buffer.enterMember(ConcreteClass_::__getMemberName(typename Indices_::Head()));
+            ctrl::Private::serialize( object.* ConcreteClass_::__getMemberPtr(typename Indices_::Head()),
+                                      buffer, version );
+            buffer.leaveMember();
+         }
          serialize(object, typename Indices_::Tail(), buffer, version);
       }
 
-      static void serialize(const ConcreteClass_& object, NullType indices, WriteBuffer& buffer, int version) {
+      static void serialize(const ConcreteClass_& object, NullType indices, AbstractWriteBuffer& buffer, int version) {
 
       }
 
       template <class Indices_>
-      static void deserialize(ConcreteClass_& object, Indices_ indices, ReadBuffer& buffer, int version) throw(Exception) {
-         if (version >= Indices_::Head::version)
-            ctrl::Private::deserialize( object.* ConcreteClass_::__getMemberPtr(typename Indices_::Head::Type())
-                                     , buffer, version );
+      static void deserialize(ConcreteClass_& object, Indices_ indices, AbstractReadBuffer& buffer, int version) throw(Exception) {
+         typedef typename ConcreteClass_::template __Version<Indices_::Head::value> Version;
+         int memberVersion = Version::version;
+         if (version >= memberVersion) {
+            buffer.enterMember(ConcreteClass_::__getMemberName(typename Indices_::Head()));
+            ctrl::Private::deserialize( object.* ConcreteClass_::__getMemberPtr(typename Indices_::Head()),
+                                        buffer, version );
+            buffer.leaveMember();
+         }
          deserialize(object, typename Indices_::Tail(), buffer, version);
       }
 
-      static void deserialize(ConcreteClass_& object, NullType indices, ReadBuffer& buffer, int version) throw(Exception) {
+      static void deserialize(ConcreteClass_& object, NullType indices, AbstractReadBuffer& buffer, int version) throw(Exception) {
 
       }
    };
@@ -44,7 +56,7 @@ namespace Private {
 #endif // CLASSSERIALIZER_H_
 
 /*
- * Copyright (C) 2010 by Gerrit Daniels <gerrit.daniels@gmail.com>
+ * Copyright (C) 2010, 2016 by Gerrit Daniels <gerrit.daniels@gmail.com>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without

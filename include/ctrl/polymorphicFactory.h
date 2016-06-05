@@ -7,7 +7,7 @@ namespace ctrl {
 
 namespace Private {
 
-   class ReadBuffer;
+   class AbstractReadBuffer;
 
    class PolymorphicFactory {
    public:
@@ -15,7 +15,7 @@ namespace Private {
       public:
          Impl();
          virtual ~Impl();
-         virtual void* deserialize(ReadBuffer& buffer, int version) const = 0;
+         virtual void* deserialize(AbstractReadBuffer& buffer, int version) const = 0;
       };
 
       PolymorphicFactory();
@@ -24,7 +24,7 @@ namespace Private {
 
       PolymorphicFactory& operator=(const PolymorphicFactory& that);
 
-      void* deserialize(ReadBuffer& buffer, int version) const;
+      void* deserialize(AbstractReadBuffer& buffer, int version) const;
 
    private:
       boost::shared_ptr<Impl> m_pimpl;
@@ -37,7 +37,7 @@ namespace Private {
 #endif // POLYMORPHICFACTORY_H_
 
 /*
- * Copyright (C) 2012, 2013 by Gerrit Daniels <gerrit.daniels@gmail.com>
+ * Copyright (C) 2012, 2013, 2016 by Gerrit Daniels <gerrit.daniels@gmail.com>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without

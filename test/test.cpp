@@ -19,7 +19,7 @@ void writeBytes(const char* bytes, const long& length) {
          column = 0;
       }
    }
-   std::cout << std::endl;
+   std::cout << std::endl << std::endl;
 }
 
 template <class T>
@@ -29,17 +29,29 @@ bool testAndDelete(T* newObj, const T& obj, char* bytes) {
       success = true;
 
    delete newObj;
-   delete[] bytes;
+   if (bytes != 0) {
+      delete[] bytes;
+   }
    return success;
 }
 
 template <class T>
 bool testSerialization(const T& obj) {
    long length;
-   char* bytes = ctrl::serialize(obj, length);
+   char* bytes = ctrl::toBinary(obj, length);
    writeBytes(bytes, length);
-   T* newObj = ctrl::deserialize<T>(bytes, length);
-   return testAndDelete(newObj, obj, bytes);
+   T* newObj = ctrl::fromBinary<T>(bytes, length);
+   if (!testAndDelete(newObj, obj, bytes)) {
+      return false;
+   }
+
+   std::string xml = ctrl::toXml(obj);
+   std::cout << xml << std::endl;
+   newObj = ctrl::fromXml<T>(xml);
+   if (!testAndDelete(newObj, obj, 0)) {
+      return false;
+   }
+   return true;
 }
 
 //******************************************************************************
@@ -156,14 +168,15 @@ public:
    }
 
    CTRL_BEGIN_MEMBERS(WStringContainer)
-   CTRL_MEMBER(private, std::wstring, m_str)
+   CTRL_MEMBER(public, std::wstring, m_str)
    CTRL_END_MEMBERS()
 };
 
 bool testWString() {
    std::cout << "testWString" << std::endl;
    std::cout << "-----------" << std::endl;
-   WStringContainer obj(L"ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ±ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ²ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ³ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ´ Gerrit");
+   WStringContainer obj(L"\u0391 - \u03a9");
+   std::wcout << obj.m_str << std::endl;
 
    return testSerialization(obj);
 }
@@ -189,22 +202,7 @@ bool testSimplePair() {
    std::cout << "--------------" << std::endl;
    SimplePair obj('G', SimpleClass(42, "Gerrit"));
 
-   long length;
-   char* bytes = ctrl::serialize(obj, length);
-   writeBytes(bytes, length);
-   SimplePair* newObj = ctrl::deserialize<SimplePair>(bytes, length);
-
-   bool success = true;
-   if (*newObj == obj) {
-      std::cout << "SUCCESS" << std::endl;
-   } else {
-      std::cout << "FAILURE" << std::endl;
-      success = false;
-   }
-
-   delete newObj;
-   delete[] bytes;
-   return success;
+   return testSerialization(obj);
 }
 
 //******************************************************************************
@@ -1003,7 +1001,12 @@ bool testAutoPointer() {
    std::cout << "-----------------" << std::endl;
    SomeContainer obj(new SomeClass(true, "Gerrit", 2.25));
 
-   return testSerialization(obj);
+   if (!testSerialization(obj)) {
+      return false;
+   }
+
+   SomeContainer obj2(0);
+   return testSerialization(obj2);
 }
 
 //******************************************************************************
@@ -1546,7 +1549,7 @@ bool testLittleEndian() {
    EndianClass obj(0x01, 0x0203, 0x04050607, 0x08090a0b0c0d0e0fLL, 2.0f, 3.0);
 
    long length;
-   char* bytes = ctrl::serialize<8, CTRL_LITTLE_ENDIAN>(obj, length);
+   char* bytes = ctrl::toBinary<8, CTRL_LITTLE_ENDIAN>(obj, length);
    writeBytes(bytes, length);
 
    char expected[] = { 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
@@ -1562,7 +1565,7 @@ bool testLittleEndian() {
       }
    }
 
-   EndianClass* newObj = ctrl::deserialize<EndianClass, 8, CTRL_LITTLE_ENDIAN>(bytes, length);
+   EndianClass* newObj = ctrl::fromBinary<EndianClass, 8, CTRL_LITTLE_ENDIAN>(bytes, length);
 
    return testAndDelete(newObj, obj, bytes);
 }
@@ -1575,7 +1578,7 @@ bool testBigEndian() {
    EndianClass obj(0x01, 0x0203, 0x04050607, 0x08090a0b0c0d0e0fLL, 2.0f, 3.0);
 
    long length;
-   char* bytes = ctrl::serialize<8, CTRL_BIG_ENDIAN>(obj, length);
+   char* bytes = ctrl::toBinary<8, CTRL_BIG_ENDIAN>(obj, length);
    writeBytes(bytes, length);
 
    char expected[] = { 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00
@@ -1591,7 +1594,7 @@ bool testBigEndian() {
       }
    }
 
-   EndianClass* newObj = ctrl::deserialize<EndianClass, 8, CTRL_BIG_ENDIAN>(bytes, length);
+   EndianClass* newObj = ctrl::fromBinary<EndianClass, 8, CTRL_BIG_ENDIAN>(bytes, length);
 
    return testAndDelete(newObj, obj, bytes);
 }
@@ -1611,7 +1614,7 @@ public:
 
    CTRL_BEGIN_MEMBERS(VersionedClass)
    CTRL_MEMBER(private, int, m_v1)
-   CTRL_MEMBER_V(private, int, m_v2, 2)
+   CTRL_MEMBER(private, int, m_v2) CTRL_WITH_VERSION(2)
    CTRL_END_MEMBERS()
 };
 
@@ -1621,9 +1624,9 @@ bool testVersion() {
    VersionedClass obj(1, 2);
 
    long length;
-   char* bytes = ctrl::serialize(obj, length, 1);
+   char* bytes = ctrl::toBinary(obj, length, 1);
    writeBytes(bytes, length);
-   VersionedClass* newObj = ctrl::deserialize<VersionedClass>(bytes, length, 1);
+   VersionedClass* newObj = ctrl::fromBinary<VersionedClass>(bytes, length, 1);
 
    if (newObj->getV1() != 1 || newObj->getV2() != 0) {
       delete newObj;
@@ -1634,9 +1637,9 @@ bool testVersion() {
       delete[] bytes;
    }
 
-   bytes = ctrl::serialize(obj, length, 2);
+   bytes = ctrl::toBinary(obj, length, 2);
    writeBytes(bytes, length);
-   newObj = ctrl::deserialize<VersionedClass>(bytes, length, 2);
+   newObj = ctrl::fromBinary<VersionedClass>(bytes, length, 2);
 
    if (newObj->getV1() != 1 || newObj->getV2() != 2) {
       delete newObj;
@@ -1659,14 +1662,14 @@ bool testCorruptData() {
    CompositeClass composite(SimpleClass(12, "Koen"), 15);
 
    long simpleLength;
-   char* simpleData = ctrl::serialize(simple, simpleLength);
+   char* simpleData = ctrl::toBinary(simple, simpleLength);
 
    long compositeLength;
-   char* compositeData = ctrl::serialize(composite, compositeLength);
+   char* compositeData = ctrl::toBinary(composite, compositeLength);
 
    bool failed = false;
    try {
-      CompositeClass* newComposite = ctrl::deserialize<CompositeClass>(simpleData, simpleLength);
+      CompositeClass* newComposite = ctrl::fromBinary<CompositeClass>(simpleData, simpleLength);
       delete newComposite;
    } catch(const ctrl::Exception& ex) {
       failed = true;
@@ -1679,7 +1682,7 @@ bool testCorruptData() {
 
    failed = false;
    try {
-      SimpleClass* newSimple = ctrl::deserialize<SimpleClass>(compositeData, compositeLength);
+      SimpleClass* newSimple = ctrl::fromBinary<SimpleClass>(compositeData, compositeLength);
       delete newSimple;
    } catch(const ctrl::Exception& ex) {
       failed = true;
@@ -1762,7 +1765,7 @@ int main() {
 }
 
 /*
- * Copyright (C) 2010, 2012 by Gerrit Daniels <gerrit.daniels@gmail.com>
+ * Copyright (C) 2010, 2012, 2016 by Gerrit Daniels <gerrit.daniels@gmail.com>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without

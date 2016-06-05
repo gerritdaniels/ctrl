@@ -1,38 +1,31 @@
-#include <ctrl/readBuffer.h>
+
+#include <ctrl/buffer/abstractReadBuffer.h>
 
 using namespace ctrl::Private;
 
-ReadBuffer::Impl::Impl() { }
-
-ReadBuffer::Impl::~Impl() { }
-
-ReadBuffer::ReadBuffer(ReadBuffer::Impl* pimpl)
-   : m_pimpl(pimpl) {
+AbstractReadBuffer::AbstractReadBuffer() {
 
 }
 
-void ReadBuffer::read(char* data, long length) throw(Exception) {
-   m_pimpl->read(data, length);
+AbstractReadBuffer::~AbstractReadBuffer() {
+
 }
 
-bool ReadBuffer::reachedEnd() const {
-   return m_pimpl->reachedEnd();
-}
 
-ReadPointerRepository< std::shared_ptr, std::weak_ptr >& ReadBuffer::getStdPointerRepository() {
+ReadPointerRepository< std::shared_ptr, std::weak_ptr >& AbstractReadBuffer::getStdPointerRepository() {
    return m_stdPointerRepository;
 }
 
-ReadPointerRepository< boost::shared_ptr, boost::weak_ptr >& ReadBuffer::getBoostPointerRepository() {
+ReadPointerRepository< boost::shared_ptr, boost::weak_ptr >& AbstractReadBuffer::getBoostPointerRepository() {
    return m_boostPointerRepository;
 }
 
-ReadRawPointerRepository& ReadBuffer::getRawPointerRepository() {
+ReadRawPointerRepository& AbstractReadBuffer::getRawPointerRepository() {
    return m_rawPointerRepository;
 }
 
 /*
- * Copyright (C) 2010, 2016 by Gerrit Daniels <gerrit.daniels@gmail.com>
+ * Copyright (C) 2016 by Gerrit Daniels <gerrit.daniels@gmail.com>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without

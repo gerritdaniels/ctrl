@@ -18,12 +18,12 @@ PolymorphicFactory& PolymorphicFactory::operator=(const PolymorphicFactory& that
    return *this;
 }
 
-void* PolymorphicFactory::deserialize(ReadBuffer& buffer, int version) const {
+void* PolymorphicFactory::deserialize(AbstractReadBuffer& buffer, int version) const {
    m_pimpl->deserialize(buffer, version);
 }
 
 /*
- * Copyright (C) 2012, 2013 by Gerrit Daniels <gerrit.daniels@gmail.com>
+ * Copyright (C) 2012, 2013, 2016 by Gerrit Daniels <gerrit.daniels@gmail.com>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without

@@ -1,19 +1,27 @@
 #ifndef CTRLEXCEPTION_H_
 #define CTRLEXCEPTION_H_
 
+#include <string>
 #include <exception>
 
 namespace ctrl {
 
 class Exception : public std::exception {
 public:
-   Exception(const char* reason) : m_reason(reason) { }
+   Exception(const std::string& reason) : m_reason(reason) {
+
+   }
+
+   Exception(const Exception& that) : m_reason(that.m_reason) {
+
+   }
 
    virtual ~Exception() throw() {}
 
-   virtual const char* what() const throw () { return m_reason; }
+   virtual const char* what() const throw () { return m_reason.c_str(); }
+   
 private:
-   const char* m_reason;
+   std::string m_reason;
 };
 
 } // namespace ctrl
@@ -21,7 +29,7 @@ private:
 #endif // CTRLEXCEPTION_H_
 
 /*
- * Copyright (C) 2010 by Gerrit Daniels <gerrit.daniels@gmail.com>
+ * Copyright (C) 2010, 2016 by Gerrit Daniels <gerrit.daniels@gmail.com>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
