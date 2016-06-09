@@ -70,7 +70,7 @@ pointer to an on heap allocated object. It's up to you to do the memory manageme
 data that is consumed by fromBinary doesn't match the length that is passed in, an exception is thrown.
 
 The toXml function takes a const reference to the object and opionally a boolean indicating that pretty printing should 
-be used. The fromXml function takes the a const string reference as argument and again returns an on heap allocated
+be used. The fromXml function takes a const string reference as argument and again returns an on heap allocated
 object.
 
 You can also use composition.
@@ -226,9 +226,9 @@ CTRL_BEGIN_MEMBERS.
 class CustomNames
 {
     CTRL_BEGIN_MEMBERS(CustomNames)
-        CTRL_WITH_NAME(custom)
+        CTRL_WITH_NAME("custom")
     CTRL_MEMBER(private, int, m_val)
-        CTRL_WITH_NAME(val)
+        CTRL_WITH_NAME("val")
     CTRL_MEMBER(private, std::string, m_text)
     CTRL_END_MEMBERS()
 
