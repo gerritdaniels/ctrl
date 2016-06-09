@@ -1,22 +1,3 @@
-#ifndef DYNAMIC_REINTERPRET_CAST_H_
-#define DYNAMIC_REINTERPRET_CAST_H_
-
-namespace ctrl {
-
-namespace Private {
-
-   template <class From_, class To_>
-   void* dynamic_reinterpret_cast(void* ptr) {
-      return reinterpret_cast<void*>(
-             dynamic_cast<To_*>(
-             reinterpret_cast<From_*>(ptr)));
-   }
-
-} // namespace Private
-
-} // namespace ctrl
-
-#endif // DYNAMIC_REINTERPRET_CAST_H_
 
 /*
  * Copyright (C) 2010, 2016 by Gerrit Daniels <gerrit.daniels@gmail.com>
@@ -42,3 +23,23 @@ namespace Private {
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
+#ifndef DYNAMIC_REINTERPRET_CAST_H_
+#define DYNAMIC_REINTERPRET_CAST_H_
+
+namespace ctrl {
+
+namespace Private {
+
+   template <class From_, class To_>
+   void* dynamic_reinterpret_cast(void* ptr) {
+      return reinterpret_cast<void*>(
+             dynamic_cast<To_*>(
+             reinterpret_cast<From_*>(ptr)));
+   }
+
+} // namespace Private
+
+} // namespace ctrl
+
+#endif // DYNAMIC_REINTERPRET_CAST_H_

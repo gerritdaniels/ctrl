@@ -1,23 +1,3 @@
-#ifndef MEMORY_FORMAT_H_
-#define MEMORY_FORMAT_H_
-
-#include <endian.h>
-
-#define CTRL_BIG_ENDIAN __BIG_ENDIAN
-#define CTRL_LITTLE_ENDIAN __LITTLE_ENDIAN
-
-#if __BYTE_ORDER == __BIG_ENDIAN
-#   define CTRL_BYTE_ORDER CTRL_BIG_ENDIAN
-#endif
-
-#if __BYTE_ORDER == __LITTLE_ENDIAN
-#   define CTRL_BYTE_ORDER CTRL_LITTLE_ENDIAN
-#endif
-
-struct CheckAlignment { char c; long long l; };
-#define CTRL_MEMORY_ALIGNMENT sizeof(CheckAlignment) - sizeof(long long)
-
-#endif // MEMORY_FORMAT_H_
 
 /*
  * Copyright (C) 2010, 2012, 2016 by Gerrit Daniels <gerrit.daniels@gmail.com>
@@ -43,3 +23,24 @@ struct CheckAlignment { char c; long long l; };
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
+#ifndef MEMORY_FORMAT_H_
+#define MEMORY_FORMAT_H_
+
+#include <endian.h>
+
+#define CTRL_BIG_ENDIAN __BIG_ENDIAN
+#define CTRL_LITTLE_ENDIAN __LITTLE_ENDIAN
+
+#if __BYTE_ORDER == __BIG_ENDIAN
+#   define CTRL_BYTE_ORDER CTRL_BIG_ENDIAN
+#endif
+
+#if __BYTE_ORDER == __LITTLE_ENDIAN
+#   define CTRL_BYTE_ORDER CTRL_LITTLE_ENDIAN
+#endif
+
+struct CheckAlignment { char c; long long l; };
+#define CTRL_MEMORY_ALIGNMENT sizeof(CheckAlignment) - sizeof(long long)
+
+#endif // MEMORY_FORMAT_H_

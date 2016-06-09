@@ -1,32 +1,3 @@
-#ifndef POLYMORPHICFACTORYIMPL_H_
-#define POLYMORPHICFACTORYIMPL_H_
-
-#include <ctrl/polymorphicFactory.h>
-#include <ctrl/forwardDeserialize.h>
-
-namespace ctrl {
-
-namespace Private {
-
-   template <class ConcreteClass_>
-   class PolymorphicFactoryImpl : public PolymorphicFactory::Impl {
-   public:
-      virtual void* deserialize(AbstractReadBuffer& buffer, int version) const {
-         ConcreteClass_* ptr;
-         try {
-            ptr = new ConcreteClass_();
-            ctrl::Private::deserialize(*ptr, buffer, version);
-            return reinterpret_cast<void*>(ptr);
-         }
-         catch(...) { delete ptr; throw; }
-      }
-   };
-
-} // namespace Private
-
-} // namespace ctrl
-
-#endif // POLYMORPHICFACTORYIMPL_H_
 
 /*
  * Copyright (C) 2012, 2013, 2016 by Gerrit Daniels <gerrit.daniels@gmail.com>
@@ -52,3 +23,36 @@ namespace Private {
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
+#ifndef POLYMORPHICFACTORYIMPL_H_
+#define POLYMORPHICFACTORYIMPL_H_
+
+#include <ctrl/polymorphicFactory.h>
+#include <ctrl/forwardDeserialize.h>
+#include <ctrl/idField.h>
+
+namespace ctrl {
+
+namespace Private {
+
+   template <class ConcreteClass_>
+   class PolymorphicFactoryImpl : public PolymorphicFactory::Impl {
+   public:
+      virtual void* deserialize(AbstractReadBuffer& buffer, const IdField& idField, const std::string& className,
+                                int version, const Context& context) const {
+         ConcreteClass_* ptr;
+         try {
+            ptr = new ConcreteClass_();
+            idField.assign(reinterpret_cast<void*>(ptr), className);
+            ctrl::Private::deserialize(*ptr, buffer, version, Context(context, ptr->__dynamicContext()));
+            return reinterpret_cast<void*>(ptr);
+         }
+         catch(...) { delete ptr; throw; }
+      }
+   };
+
+} // namespace Private
+
+} // namespace ctrl
+
+#endif // POLYMORPHICFACTORYIMPL_H_

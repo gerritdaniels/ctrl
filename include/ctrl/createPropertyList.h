@@ -24,42 +24,45 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <ctrl/buffer/writePointerRepository.h>
+#ifndef CREATEPROPERTYLIST_H_
+#define CREATEPROPERTYLIST_H_
 
-using namespace ctrl::Private;
+#include <ctrl/typemanip.h>
 
-WritePointerRepository::WritePointerRepository()
-   : m_nextIndex(1) {
-}
+namespace ctrl {
 
-bool WritePointerRepository::isRegistered(void* p) const {
-   return m_indices.find(p) != m_indices.end();
-}
+namespace Private {
 
-int WritePointerRepository::get(void* p) const {
-   return m_indices.at(p);
-}
+   template <class TList_, int startLine_, int endLine_, class ConcreteClass_>
+   struct CreatePropertyListImpl {
+      typedef typename ConcreteClass_::template __IsPropertyPresent<endLine_>
+                     IsPropertyPresent;
+      enum { isPropertyPresent = IsPropertyPresent::value };
 
-int WritePointerRepository::add(void* p) {
-   m_indices[p] = m_nextIndex;
-   return m_nextIndex++;
-}
+      typedef typename Select< isPropertyPresent
+                             , TypeList<typename IsPropertyPresent::PropertyId, TList_>
+                             , TList_ >::Result NewTList;
 
-int WritePointerRepository::reserveIndex(void* p) {
-   m_reserved[p] = m_nextIndex;
-   return m_nextIndex++;
-}
+      typedef CreatePropertyListImpl<NewTList, startLine_, endLine_ - 1, ConcreteClass_> PropertyListImpl;
+      typedef typename PropertyListImpl::TList TList;
+   };
 
-bool WritePointerRepository::isReserved(void* p) {
-   return m_reserved.find(p) != m_reserved.end();
-}
 
-int WritePointerRepository::getReservedIndex(void* p) {
-   return m_reserved.at(p);
-}
+   template <class TList_, int startLine_, class ConcreteClass_>
+   struct CreatePropertyListImpl<TList_, startLine_, startLine_, ConcreteClass_> {
+      typedef TList_ TList;
+   };
 
-void WritePointerRepository::clearReserved(void* p) {
-   int index = m_reserved.at(p);
-   m_reserved.erase(p);
-   m_indices[p] = index;
-}
+
+   template <int startLine_, int endLine_, class ConcreteClass_>
+   struct CreatePropertyList {
+      typedef CreatePropertyListImpl< NullType, startLine_
+                                     , endLine_ - 1, ConcreteClass_ > PropertyListImpl;
+      typedef typename PropertyListImpl::TList TList;
+   };
+
+} // namespace ctrl
+
+} // namespace Private
+
+#endif // CREATEPROPERTYLIST_H_

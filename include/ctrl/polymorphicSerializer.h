@@ -1,51 +1,3 @@
-#ifndef _POLYMORPHICSERIALIZER_H_
-#define _POLYMORPHICSERIALIZER_H_
-
-#include <string>
-#include <map>
-#include <memory>
-#include <vector>
-#include <ctrl/polymorphicFactory.h>
-
-namespace ctrl {
-
-namespace Private {
-
-   class AbstractReadBuffer;
-
-   class PolymorphicSerializer {
-   private:
-      PolymorphicSerializer();
-
-   public:
-      ~PolymorphicSerializer();
-
-      static PolymorphicSerializer& instance();
-
-      bool isPolymorph(const std::string& className) const;
-
-      int registerDeserialize(const std::string& className, const PolymorphicFactory& factory);
-      int registerAbstract(const std::string& className);
-      void* deserialize(const std::string& className, AbstractReadBuffer& buffer, int version) const;
-
-      typedef void* (*CastFunction)(void*);
-      int registerCast(const std::string& from, const std::string& to, CastFunction func);
-      CastFunction getCast(const std::string& from, const std::string& to) const;
-      bool hasCast(const std::string& from, const std::string& to) const;
-
-   private:
-      std::map<std::string, PolymorphicFactory> m_factories;
-      std::vector<std::string> m_abstractBaseClasses;
-
-      typedef std::map< std::string, std::map<std::string, CastFunction> > CastMap;
-      CastMap m_casts;
-   };
-
-} // namespace Private
-
-} // namespace ctrl
-
-#endif // _POLYMORPHICSERIALIZER_H_
 
 /*
  * Copyright (C) 2010, 2012, 2013, 2015, 2016 by Gerrit Daniels <gerrit.daniels@gmail.com>
@@ -71,3 +23,58 @@ namespace Private {
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
+#ifndef _POLYMORPHICSERIALIZER_H_
+#define _POLYMORPHICSERIALIZER_H_
+
+#include <string>
+#include <map>
+#include <memory>
+#include <vector>
+#include <ctrl/polymorphicFactory.h>
+
+namespace ctrl {
+
+class Context;
+
+class AbstractReadBuffer;
+
+class IdField;
+
+namespace Private {
+
+   class PolymorphicSerializer {
+   private:
+      PolymorphicSerializer();
+
+   public:
+      ~PolymorphicSerializer();
+
+      static PolymorphicSerializer& instance();
+
+      bool isPolymorph(const std::string& className) const;
+
+      int registerDeserialize(const std::string& className, const PolymorphicFactory& factory);
+      int registerAbstract(const std::string& className);
+      void* deserialize(const std::string& className, AbstractReadBuffer& buffer, int version,
+                        const IdField& idField, const Context& context) const;
+
+      typedef void* (*CastFunction)(void*);
+      int registerCast(const std::string& from, const std::string& to, CastFunction func);
+      CastFunction getCast(const std::string& from, const std::string& to) const;
+      bool hasCast(const std::string& from, const std::string& to) const;
+      void* cast(const std::string& from, const std::string& to, void* p) const;
+
+   private:
+      std::map<std::string, PolymorphicFactory> m_factories;
+      std::vector<std::string> m_abstractBaseClasses;
+
+      typedef std::map< std::string, std::map<std::string, CastFunction> > CastMap;
+      CastMap m_casts;
+   };
+
+} // namespace Private
+
+} // namespace ctrl
+
+#endif // _POLYMORPHICSERIALIZER_H_

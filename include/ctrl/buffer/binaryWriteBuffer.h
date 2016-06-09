@@ -1,3 +1,29 @@
+
+/*
+ * Copyright (C) 2010, 2012, 2016 by Gerrit Daniels <gerrit.daniels@gmail.com>
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ *    list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
 #ifndef BINARYWRITEBUFFER_H_
 #define BINARYWRITEBUFFER_H_
 
@@ -9,7 +35,7 @@ namespace ctrl {
 
 namespace Private {
 
-   class BinaryWriteBuffer : public AbstractWriteBuffer {
+   class BinaryWriteBuffer : public ctrl::AbstractWriteBuffer {
    public:
       class Impl {
       public:
@@ -49,48 +75,53 @@ namespace Private {
 
       BinaryWriteBuffer(Impl* pimpl);
 
-      virtual void enterObject() throw(Exception);
-      virtual void enterMember(const char* name) throw(Exception);
-      virtual void leaveMember() throw(Exception);
-      virtual void leaveObject() throw(Exception);
+      virtual void enterObject(const Context& context) throw(Exception);
+      virtual void enterMember(const Context& context, const char* suggested = 0) throw(Exception);
+      virtual void leaveMember(const Context& context) throw(Exception);
+      virtual void leaveObject(const Context& context) throw(Exception);
 
-      virtual void enterCollection() throw(Exception);
-      virtual void nextCollectionElement() throw(Exception);
-      virtual void leaveCollection() throw(Exception);
+      virtual void enterIdField(const Context& context) throw(Exception);
+      virtual void appendNullId(const Context& context) throw(Exception);
+      virtual void appendNonNullId(const Context& context) throw(Exception);
+      virtual void leaveIdField(const Context& context) throw(Exception);
 
-      virtual void enterMap() throw(Exception);
-      virtual void enterKey() throw(Exception);
-      virtual void leaveKey() throw(Exception);
-      virtual void enterValue() throw(Exception);
-      virtual void leaveValue() throw(Exception);
-      virtual void leaveMap() throw(Exception);
+      virtual void enterCollection(const Context& context) throw(Exception);
+      virtual void nextCollectionElement(const Context& context) throw(Exception);
+      virtual void leaveCollection(const Context& context) throw(Exception);
 
-      virtual void appendVersion(const int& version) throw(Exception);
-      virtual void appendBits(const char* data, long length) throw(Exception);
-      virtual void appendCollectionSize(const std::size_t& size) throw(Exception);
-      virtual void appendPointerId(const int& id) throw(Exception);
-      virtual void appendTypeId(const char* val) throw(Exception);
+      virtual void enterMap(const Context& context) throw(Exception);
+      virtual void enterKey(const Context& context) throw(Exception);
+      virtual void leaveKey(const Context& context) throw(Exception);
+      virtual void enterValue(const Context& context) throw(Exception);
+      virtual void leaveValue(const Context& context) throw(Exception);
+      virtual void leaveMap(const Context& context) throw(Exception);
 
-      virtual void append(const bool& val) throw(Exception);
-      virtual void append(const char& val) throw(Exception);
-      virtual void append(const short& val) throw(Exception);
-      virtual void append(const int& val) throw(Exception);
-      virtual void append(const long& val) throw(Exception);
-      virtual void append(const long long& val) throw(Exception);
-      virtual void append(const unsigned char& val) throw(Exception);
-      virtual void append(const unsigned short& val) throw(Exception);
-      virtual void append(const unsigned int& val) throw(Exception);
-      virtual void append(const unsigned long& val) throw(Exception);
-      virtual void append(const unsigned long long& val) throw(Exception);
-      virtual void append(const float& val) throw(Exception);
-      virtual void append(const double& val) throw(Exception);
-      virtual void append(const std::string& val) throw(Exception);
+      virtual void appendVersion(const int& version, const Context& context) throw(Exception);
+      virtual void appendBits(const char* data, long length, const Context& context) throw(Exception);
+      virtual void appendCollectionSize(const std::size_t& size, const Context& context) throw(Exception);
+      virtual void appendTypeId(const std::string& val, const Context& context) throw(Exception);
+
+      virtual void append(const bool& val, const Context& context) throw(Exception);
+      virtual void append(const char& val, const Context& context) throw(Exception);
+      virtual void append(const short& val, const Context& context) throw(Exception);
+      virtual void append(const int& val, const Context& context) throw(Exception);
+      virtual void append(const long& val, const Context& context) throw(Exception);
+      virtual void append(const long long& val, const Context& context) throw(Exception);
+      virtual void append(const unsigned char& val, const Context& context) throw(Exception);
+      virtual void append(const unsigned short& val, const Context& context) throw(Exception);
+      virtual void append(const unsigned int& val, const Context& context) throw(Exception);
+      virtual void append(const unsigned long& val, const Context& context) throw(Exception);
+      virtual void append(const unsigned long long& val, const Context& context) throw(Exception);
+      virtual void append(const float& val, const Context& context) throw(Exception);
+      virtual void append(const double& val, const Context& context) throw(Exception);
+      virtual void append(const std::string& val, const Context& context) throw(Exception);
 
       long length();
       char* getData();
 
    private:
       std::unique_ptr<Impl> m_pimpl;
+      bool m_skipNextFundamental;
    };
 
 } // namespace Private
@@ -98,28 +129,3 @@ namespace Private {
 } // namespace ctrl
 
 #endif // BINARYWRITEBUFFER_H_
-
-/*
- * Copyright (C) 2010, 2012, 2016 by Gerrit Daniels <gerrit.daniels@gmail.com>
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * 1. Redistributions of source code must retain the above copyright notice, this
- *    list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright notice,
- *    this list of conditions and the following disclaimer in the documentation
- *    and/or other materials provided with the distribution.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
- * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */

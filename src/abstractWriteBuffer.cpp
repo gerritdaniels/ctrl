@@ -1,20 +1,4 @@
 
-#include <ctrl/buffer/abstractWriteBuffer.h>
-
-using namespace ctrl::Private;
-
-AbstractWriteBuffer::AbstractWriteBuffer() {
-
-}
-
-AbstractWriteBuffer::~AbstractWriteBuffer() {
-
-}
-
-WritePointerRepository& AbstractWriteBuffer::getPointerRepository() {
-   return m_pointerRepository;
-}
-
 /*
  * Copyright (C) 2016 by Gerrit Daniels <gerrit.daniels@gmail.com>
  * All rights reserved.
@@ -39,3 +23,20 @@ WritePointerRepository& AbstractWriteBuffer::getPointerRepository() {
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
+#include <ctrl/buffer/abstractWriteBuffer.h>
+
+using namespace ctrl;
+using namespace ctrl::Private;
+
+AbstractWriteBuffer::AbstractWriteBuffer() {
+
+}
+
+AbstractWriteBuffer::~AbstractWriteBuffer() {
+
+}
+
+WritePointerRepository& AbstractWriteBuffer::getPointerRepository() {
+   return m_pointerRepository;
+}

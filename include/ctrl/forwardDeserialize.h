@@ -1,170 +1,3 @@
-#ifndef FORWARDDESERIALIZE_H_
-#define FORWARDDESERIALIZE_H_
-
-#include <bitset>
-#include <deque>
-#include <list>
-#include <map>
-#include <queue>
-#include <set>
-#include <stack>
-#include <vector>
-#include <array>
-#include <forward_list>
-#include <unordered_map>
-#include <unordered_set>
-#include <string>
-#include <memory>
-#include <complex>
-#include <valarray>
-#include <boost/shared_ptr.hpp>
-#include <boost/weak_ptr.hpp>
-#include <ctrl/exception.h>
-
-namespace ctrl {
-
-namespace Private {
-
-   class AbstractReadBuffer;
-
-   template <class ConcreteClass_>
-   void deserialize(ConcreteClass_& value, AbstractReadBuffer& buffer, int version) throw(Exception);
-
-   template <size_t size_>
-   void deserialize(std::bitset<size_>& elements, AbstractReadBuffer& buffer, int version) throw(Exception);
-
-   template <class Element_, class Alloc_>
-   void deserialize(std::deque<Element_, Alloc_>& elements, AbstractReadBuffer& buffer, int version) throw(Exception);
-
-   template <class Element_, class Alloc_>
-   void deserialize(std::list<Element_, Alloc_>& elements, AbstractReadBuffer& buffer, int version) throw(Exception);
-
-   template <class Key_, class Value_, class Comp_, class Alloc_>
-   void deserialize(std::map<Key_, Value_, Comp_, Alloc_>& elements, AbstractReadBuffer& buffer, int version) throw(Exception);
-
-   template <class Key_, class Value_, class Comp_, class Alloc_>
-   void deserialize(std::multimap<Key_, Value_, Comp_, Alloc_>& elements, AbstractReadBuffer& buffer, int version) throw(Exception);
-
-   template <class Element_, class Container_>
-   void deserialize(std::queue<Element_, Container_>& elements, AbstractReadBuffer& buffer, int version) throw(Exception);
-
-   template <class Element_, class Container_, class Comp_>
-   void deserialize(std::priority_queue<Element_, Container_, Comp_>& elements, AbstractReadBuffer& buffer, int version) throw(Exception);
-
-   template <class Key_, class Comp_, class Alloc_>
-   void deserialize(std::set<Key_, Comp_, Alloc_>& elements, AbstractReadBuffer& buffer, int version) throw(Exception);
-
-   template <class Key_, class Comp_, class Alloc_>
-   void deserialize(std::multiset<Key_, Comp_, Alloc_>& elements, AbstractReadBuffer& buffer, int version) throw(Exception);
-
-   template <class Element_, class Container_>
-   void deserialize(std::stack<Element_, Container_>& elements, AbstractReadBuffer& buffer, int version) throw(Exception);
-
-   template <class Element_, class Alloc_>
-   void deserialize(std::vector<Element_, Alloc_>& elements, AbstractReadBuffer& buffer, int version) throw(Exception);
-
-   template <class Element_, size_t size_>
-   void deserialize(std::array<Element_, size_>& elements, AbstractReadBuffer& buffer, int version) throw(Exception);
-
-   template <class Element_, class Alloc_>
-   void deserialize(std::forward_list<Element_, Alloc_>& elements, AbstractReadBuffer& buffer, int version) throw(Exception);
-
-   template <class Key_, class Value_, class Hash_, class Pred_, class Alloc_>
-   void deserialize( std::unordered_map<Key_, Value_, Hash_, Pred_, Alloc_>& elements
-                   , AbstractReadBuffer& buffer, int version ) throw(Exception);
-
-   template <class Key_, class Value_, class Hash_, class Pred_, class Alloc_>
-   void deserialize( std::unordered_multimap<Key_, Value_, Hash_, Pred_, Alloc_>& elements
-                   , AbstractReadBuffer& buffer, int version ) throw(Exception);
-
-   template <class Key_, class Hash_, class Pred_, class Alloc_>
-   void deserialize( std::unordered_set<Key_, Hash_, Pred_, Alloc_>& elements
-                   , AbstractReadBuffer& buffer, int version ) throw(Exception);
-
-   template <class Key_, class Hash_, class Pred_, class Alloc_>
-   void deserialize( std::unordered_multiset<Key_, Hash_, Pred_, Alloc_>& elements
-                   , AbstractReadBuffer& buffer, int version ) throw(Exception);
-
-   template <class Element_>
-   void deserialize(boost::shared_ptr<Element_>& ptr, AbstractReadBuffer& buffer, int version) throw(Exception);
-
-   template <class Element_>
-   void deserialize(boost::weak_ptr<Element_>& ptr, AbstractReadBuffer& buffer, int version) throw(Exception);
-
-   template <class Element_>
-   void deserialize(std::shared_ptr<Element_>& ptr, AbstractReadBuffer& buffer, int version) throw(Exception);
-
-   template <class Element_>
-   void deserialize(std::weak_ptr<Element_>& ptr, AbstractReadBuffer& buffer, int version) throw(Exception);
-
-   template <class Element_>
-   void deserialize(std::auto_ptr<Element_>& ptr, AbstractReadBuffer& buffer, int version) throw(Exception);
-
-   template <class Element_>
-   void deserialize(std::unique_ptr<Element_>& ptr, AbstractReadBuffer& buffer, int version) throw(Exception);
-
-   template <class Element_>
-   void deserialize(Element_*& ptr, AbstractReadBuffer& buffer, int version) throw(Exception);
-
-   template <class First_, class Second_>
-   void deserialize(std::pair<First_, Second_>& obj, AbstractReadBuffer& buffer, int version) throw(Exception);
-
-   template <class Number_>
-   void deserialize(std::complex<Number_>& obj, AbstractReadBuffer& buffer, int version) throw(Exception);
-
-   template <class Number_>
-   void deserialize(std::valarray<Number_>& obj, AbstractReadBuffer& buffer, int version) throw(Exception);
-
-   template <>
-   void deserialize(bool& value, AbstractReadBuffer& buffer, int version) throw(Exception);
-
-   template <>
-   void deserialize(char& value, AbstractReadBuffer& buffer, int version) throw(Exception);
-
-   template <>
-   void deserialize(short& value, AbstractReadBuffer& buffer, int version) throw(Exception);
-
-   template <>
-   void deserialize(int& value, AbstractReadBuffer& buffer, int version) throw(Exception);
-
-   template <>
-   void deserialize(long& value, AbstractReadBuffer& buffer, int version) throw(Exception);
-
-   template <>
-   void deserialize(long long& value, AbstractReadBuffer& buffer, int version) throw(Exception);
-
-   template <>
-   void deserialize(unsigned char& value, AbstractReadBuffer& buffer, int version) throw(Exception);
-
-   template <>
-   void deserialize(unsigned short& value, AbstractReadBuffer& buffer, int version) throw(Exception);
-
-   template <>
-   void deserialize(unsigned int& value, AbstractReadBuffer& buffer, int version) throw(Exception);
-
-   template <>
-   void deserialize(unsigned long& value, AbstractReadBuffer& buffer, int version) throw(Exception);
-
-   template <>
-   void deserialize(unsigned long long& value, AbstractReadBuffer& buffer, int version) throw(Exception);
-
-   template <>
-   void deserialize(float& value, AbstractReadBuffer& buffer, int version) throw(Exception);
-
-   template <>
-   void deserialize(double& value, AbstractReadBuffer& buffer, int version) throw(Exception);
-
-   template <>
-   void deserialize(std::string& value, AbstractReadBuffer& buffer, int version) throw(Exception);
-
-   template <>
-   void deserialize(std::wstring& value, AbstractReadBuffer& buffer, int version) throw(Exception);
-
-} // namespace Private
-
-} // namespace ctrl
-
-#endif // FORWARDDESERIALIZE_H_
 
 /*
  * Copyright (C) 2010, 2012, 2016 by Gerrit Daniels <gerrit.daniels@gmail.com>
@@ -190,3 +23,173 @@ namespace Private {
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
+#ifndef FORWARDDESERIALIZE_H_
+#define FORWARDDESERIALIZE_H_
+
+#include <bitset>
+#include <deque>
+#include <list>
+#include <map>
+#include <queue>
+#include <set>
+#include <stack>
+#include <vector>
+#include <array>
+#include <forward_list>
+#include <unordered_map>
+#include <unordered_set>
+#include <string>
+#include <memory>
+#include <complex>
+#include <valarray>
+#include <boost/shared_ptr.hpp>
+#include <boost/weak_ptr.hpp>
+#include <ctrl/exception.h>
+
+namespace ctrl {
+
+class AbstractReadBuffer;
+
+class Context;
+
+namespace Private {
+
+   template <class ConcreteClass_>
+   void deserialize(ConcreteClass_& value, AbstractReadBuffer& buffer, int version, const Context& context) throw(Exception);
+
+   template <size_t size_>
+   void deserialize(std::bitset<size_>& elements, AbstractReadBuffer& buffer, int version, const Context& context) throw(Exception);
+
+   template <class Element_, class Alloc_>
+   void deserialize(std::deque<Element_, Alloc_>& elements, AbstractReadBuffer& buffer, int version, const Context& context) throw(Exception);
+
+   template <class Element_, class Alloc_>
+   void deserialize(std::list<Element_, Alloc_>& elements, AbstractReadBuffer& buffer, int version, const Context& context) throw(Exception);
+
+   template <class Key_, class Value_, class Comp_, class Alloc_>
+   void deserialize(std::map<Key_, Value_, Comp_, Alloc_>& elements, AbstractReadBuffer& buffer, int version, const Context& context) throw(Exception);
+
+   template <class Key_, class Value_, class Comp_, class Alloc_>
+   void deserialize(std::multimap<Key_, Value_, Comp_, Alloc_>& elements, AbstractReadBuffer& buffer, int version, const Context& context) throw(Exception);
+
+   template <class Element_, class Container_>
+   void deserialize(std::queue<Element_, Container_>& elements, AbstractReadBuffer& buffer, int version, const Context& context) throw(Exception);
+
+   template <class Element_, class Container_, class Comp_>
+   void deserialize(std::priority_queue<Element_, Container_, Comp_>& elements, AbstractReadBuffer& buffer, int version, const Context& context) throw(Exception);
+
+   template <class Key_, class Comp_, class Alloc_>
+   void deserialize(std::set<Key_, Comp_, Alloc_>& elements, AbstractReadBuffer& buffer, int version, const Context& context) throw(Exception);
+
+   template <class Key_, class Comp_, class Alloc_>
+   void deserialize(std::multiset<Key_, Comp_, Alloc_>& elements, AbstractReadBuffer& buffer, int version, const Context& context) throw(Exception);
+
+   template <class Element_, class Container_>
+   void deserialize(std::stack<Element_, Container_>& elements, AbstractReadBuffer& buffer, int version, const Context& context) throw(Exception);
+
+   template <class Element_, class Alloc_>
+   void deserialize(std::vector<Element_, Alloc_>& elements, AbstractReadBuffer& buffer, int version, const Context& context) throw(Exception);
+
+   template <class Element_, size_t size_>
+   void deserialize(std::array<Element_, size_>& elements, AbstractReadBuffer& buffer, int version, const Context& context) throw(Exception);
+
+   template <class Element_, class Alloc_>
+   void deserialize(std::forward_list<Element_, Alloc_>& elements, AbstractReadBuffer& buffer, int version, const Context& context) throw(Exception);
+
+   template <class Key_, class Value_, class Hash_, class Pred_, class Alloc_>
+   void deserialize( std::unordered_map<Key_, Value_, Hash_, Pred_, Alloc_>& elements
+                   , AbstractReadBuffer& buffer, int version, const Context& context) throw(Exception);
+
+   template <class Key_, class Value_, class Hash_, class Pred_, class Alloc_>
+   void deserialize( std::unordered_multimap<Key_, Value_, Hash_, Pred_, Alloc_>& elements
+                   , AbstractReadBuffer& buffer, int version, const Context& context) throw(Exception);
+
+   template <class Key_, class Hash_, class Pred_, class Alloc_>
+   void deserialize( std::unordered_set<Key_, Hash_, Pred_, Alloc_>& elements
+                   , AbstractReadBuffer& buffer, int version, const Context& context) throw(Exception);
+
+   template <class Key_, class Hash_, class Pred_, class Alloc_>
+   void deserialize( std::unordered_multiset<Key_, Hash_, Pred_, Alloc_>& elements
+                   , AbstractReadBuffer& buffer, int version, const Context& context) throw(Exception);
+
+   template <class Element_>
+   void deserialize(boost::shared_ptr<Element_>& ptr, AbstractReadBuffer& buffer, int version, const Context& context) throw(Exception);
+
+   template <class Element_>
+   void deserialize(boost::weak_ptr<Element_>& ptr, AbstractReadBuffer& buffer, int version, const Context& context) throw(Exception);
+
+   template <class Element_>
+   void deserialize(std::shared_ptr<Element_>& ptr, AbstractReadBuffer& buffer, int version, const Context& context) throw(Exception);
+
+   template <class Element_>
+   void deserialize(std::weak_ptr<Element_>& ptr, AbstractReadBuffer& buffer, int version, const Context& context) throw(Exception);
+
+   template <class Element_>
+   void deserialize(std::auto_ptr<Element_>& ptr, AbstractReadBuffer& buffer, int version, const Context& context) throw(Exception);
+
+   template <class Element_>
+   void deserialize(std::unique_ptr<Element_>& ptr, AbstractReadBuffer& buffer, int version, const Context& context) throw(Exception);
+
+   template <class Element_>
+   void deserialize(Element_*& ptr, AbstractReadBuffer& buffer, int version, const Context& context) throw(Exception);
+
+   template <class First_, class Second_>
+   void deserialize(std::pair<First_, Second_>& obj, AbstractReadBuffer& buffer, int version, const Context& context) throw(Exception);
+
+   template <class Number_>
+   void deserialize(std::complex<Number_>& obj, AbstractReadBuffer& buffer, int version, const Context& context) throw(Exception);
+
+   template <class Number_>
+   void deserialize(std::valarray<Number_>& obj, AbstractReadBuffer& buffer, int version, const Context& context) throw(Exception);
+
+   template <>
+   void deserialize(bool& value, AbstractReadBuffer& buffer, int version, const Context& context) throw(Exception);
+
+   template <>
+   void deserialize(char& value, AbstractReadBuffer& buffer, int version, const Context& context) throw(Exception);
+
+   template <>
+   void deserialize(short& value, AbstractReadBuffer& buffer, int version, const Context& context) throw(Exception);
+
+   template <>
+   void deserialize(int& value, AbstractReadBuffer& buffer, int version, const Context& context) throw(Exception);
+
+   template <>
+   void deserialize(long& value, AbstractReadBuffer& buffer, int version, const Context& context) throw(Exception);
+
+   template <>
+   void deserialize(long long& value, AbstractReadBuffer& buffer, int version, const Context& context) throw(Exception);
+
+   template <>
+   void deserialize(unsigned char& value, AbstractReadBuffer& buffer, int version, const Context& context) throw(Exception);
+
+   template <>
+   void deserialize(unsigned short& value, AbstractReadBuffer& buffer, int version, const Context& context) throw(Exception);
+
+   template <>
+   void deserialize(unsigned int& value, AbstractReadBuffer& buffer, int version, const Context& context) throw(Exception);
+
+   template <>
+   void deserialize(unsigned long& value, AbstractReadBuffer& buffer, int version, const Context& context) throw(Exception);
+
+   template <>
+   void deserialize(unsigned long long& value, AbstractReadBuffer& buffer, int version, const Context& context) throw(Exception);
+
+   template <>
+   void deserialize(float& value, AbstractReadBuffer& buffer, int version, const Context& context) throw(Exception);
+
+   template <>
+   void deserialize(double& value, AbstractReadBuffer& buffer, int version, const Context& context) throw(Exception);
+
+   template <>
+   void deserialize(std::string& value, AbstractReadBuffer& buffer, int version, const Context& context) throw(Exception);
+
+   template <>
+   void deserialize(std::wstring& value, AbstractReadBuffer& buffer, int version, const Context& context) throw(Exception);
+
+} // namespace Private
+
+} // namespace ctrl
+
+#endif // FORWARDDESERIALIZE_H_

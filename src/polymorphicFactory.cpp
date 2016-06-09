@@ -1,26 +1,3 @@
-#include <ctrl/polymorphicFactory.h>
-#include <ctrl/readBuffer.h>
-
-using namespace ctrl::Private;
-
-PolymorphicFactory::Impl::Impl() { }
-
-PolymorphicFactory::Impl::~Impl() { }
-
-PolymorphicFactory::PolymorphicFactory() { }
-
-PolymorphicFactory::PolymorphicFactory(boost::shared_ptr<Impl> pimpl) : m_pimpl(pimpl) { }
-
-PolymorphicFactory::PolymorphicFactory(const PolymorphicFactory& that) : m_pimpl(that.m_pimpl) { }
-
-PolymorphicFactory& PolymorphicFactory::operator=(const PolymorphicFactory& that) {
-   m_pimpl = that.m_pimpl;
-   return *this;
-}
-
-void* PolymorphicFactory::deserialize(AbstractReadBuffer& buffer, int version) const {
-   m_pimpl->deserialize(buffer, version);
-}
 
 /*
  * Copyright (C) 2012, 2013, 2016 by Gerrit Daniels <gerrit.daniels@gmail.com>
@@ -46,3 +23,28 @@ void* PolymorphicFactory::deserialize(AbstractReadBuffer& buffer, int version) c
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
+#include <ctrl/polymorphicFactory.h>
+#include <ctrl/buffer/abstractReadBuffer.h>
+
+using namespace ctrl::Private;
+
+PolymorphicFactory::Impl::Impl() { }
+
+PolymorphicFactory::Impl::~Impl() { }
+
+PolymorphicFactory::PolymorphicFactory() { }
+
+PolymorphicFactory::PolymorphicFactory(boost::shared_ptr<Impl> pimpl) : m_pimpl(pimpl) { }
+
+PolymorphicFactory::PolymorphicFactory(const PolymorphicFactory& that) : m_pimpl(that.m_pimpl) { }
+
+PolymorphicFactory& PolymorphicFactory::operator=(const PolymorphicFactory& that) {
+   m_pimpl = that.m_pimpl;
+   return *this;
+}
+
+void* PolymorphicFactory::deserialize(AbstractReadBuffer& buffer, const IdField& idField, const std::string& className,
+                                      int version, const Context& context) const {
+   m_pimpl->deserialize(buffer, idField, className, version, context);
+}

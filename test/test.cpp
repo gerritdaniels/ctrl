@@ -1,9 +1,33 @@
 
+/*
+ * Copyright (C) 2010, 2012, 2013, 2015, 2016 by Gerrit Daniels <gerrit.daniels@gmail.com>
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ *    list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
 #include <iostream>
 #include <iomanip>
-#include <ctrl/reflectionMacros.h>
-#include <ctrl/serialize.h>
-#include <ctrl/deserialize.h>
+#include <string>
+#include <ctrl/ctrl.h>
 
 void writeBytes(const char* bytes, const long& length) {
    std::cout << std::hex;
@@ -45,7 +69,7 @@ bool testSerialization(const T& obj) {
       return false;
    }
 
-   std::string xml = ctrl::toXml(obj);
+   std::string xml = ctrl::toXml(obj, true);
    std::cout << xml << std::endl;
    newObj = ctrl::fromXml<T>(xml);
    if (!testAndDelete(newObj, obj, 0)) {
@@ -1143,8 +1167,14 @@ public:
 
    CTRL_BEGIN_MEMBERS(Color)
    CTRL_MEMBER(private, int, m_red)
+         CTRL_WITH_NAME("r")
+         CTRL_AS_ATTRIBUTE()
    CTRL_MEMBER(private, int, m_green)
+         CTRL_WITH_NAME("g")
+         CTRL_AS_ATTRIBUTE()
    CTRL_MEMBER(private, int, m_blue)
+         CTRL_WITH_NAME("b")
+         CTRL_AS_ATTRIBUTE()
    CTRL_END_MEMBERS()
 };
 
@@ -1166,7 +1196,12 @@ public:
    virtual ~Shape() { }
 
    CTRL_BEGIN_MEMBERS(Shape)
+         CTRL_TYPE_ID_FIELD_NAME("shapetype")
+         CTRL_TYPE_ID_FIELD_AS_ATTRIBUTE()
+         CTRL_ID_FIELD_NAME("id")
+         CTRL_ID_FIELD_AS_ATTRIBUTE()
    CTRL_MEMBER(protected, Color, m_fill)
+         CTRL_WITH_NAME("fill")
    CTRL_END_MEMBERS()
 };
 
@@ -1194,8 +1229,11 @@ protected:
    CTRL_BEGIN_MEMBERS(Circle)
    CTRL_BASE_CLASS(Shape)
    CTRL_MEMBER(private, float, m_x)
+         CTRL_WITH_NAME("x")
    CTRL_MEMBER(private, float, m_y)
+         CTRL_WITH_NAME("y")
    CTRL_MEMBER(private, float, m_radius)
+         CTRL_WITH_NAME("r")
    CTRL_END_MEMBERS()
 };
 
@@ -1224,9 +1262,13 @@ protected:
    CTRL_BEGIN_MEMBERS(Rectangle)
    CTRL_BASE_CLASS(Shape)
    CTRL_MEMBER(private, float, m_x)
+         CTRL_WITH_NAME("x")
    CTRL_MEMBER(private, float, m_y)
+         CTRL_WITH_NAME("y")
    CTRL_MEMBER(private, float, m_width)
+         CTRL_WITH_NAME("w")
    CTRL_MEMBER(private, float, m_height)
+         CTRL_WITH_NAME("h")
    CTRL_END_MEMBERS()
 };
 
@@ -1265,7 +1307,9 @@ public:
 
    CTRL_BEGIN_MEMBERS(Drawing)
    CTRL_MEMBER(private, Color, m_background)
+         CTRL_WITH_NAME("background")
    CTRL_MEMBER(private, std::vector< boost::shared_ptr<Shape> >, m_shapes)
+         CTRL_WITH_NAME("shapes")
    CTRL_END_MEMBERS()
 };
 
@@ -1342,6 +1386,7 @@ public:
    }
 
    CTRL_BEGIN_MEMBERS(Base0)
+         CTRL_WITH_NAME("B0")
    CTRL_MEMBER(private, int, m_val0)
    CTRL_END_MEMBERS()
 };
@@ -1358,6 +1403,7 @@ public:
    }
 
    CTRL_BEGIN_MEMBERS(Base1)
+         CTRL_WITH_NAME("B1")
    CTRL_MEMBER(private, int, m_val1)
    CTRL_END_MEMBERS()
 };
@@ -1376,6 +1422,7 @@ public:
    }
 
    CTRL_BEGIN_MEMBERS(Derived0)
+         CTRL_WITH_NAME("D0")
    CTRL_BASE_CLASS(Base0)
    CTRL_BASE_CLASS(Base1)
    CTRL_MEMBER(private, std::string, m_str)
@@ -1404,6 +1451,7 @@ public:
    }
 
    CTRL_BEGIN_MEMBERS(Derived1)
+         CTRL_WITH_NAME("D1")
    CTRL_BASE_CLASS(Base0)
    CTRL_BASE_CLASS(Base1)
    CTRL_MEMBER(private, std::string, m_str)
@@ -1601,32 +1649,33 @@ bool testBigEndian() {
 
 //******************************************************************************
 
-class VersionedClass {
+class WithVersionedClass {
 public:
-   VersionedClass(int v1, int v2) : m_v1(v1), m_v2(v2) { }
+   WithVersionedClass(int v1, int v2) : m_v1(v1), m_v2(v2) { }
 
    int getV1() const { return m_v1; }
    int getV2() const { return m_v2; }
 
-   static void __initialize(VersionedClass& obj, int version) {
+   static void __initialize(WithVersionedClass& obj, int version) {
       if (version < 2) obj.m_v2 = 0;
    }
 
-   CTRL_BEGIN_MEMBERS(VersionedClass)
+   CTRL_BEGIN_MEMBERS(WithVersionedClass)
    CTRL_MEMBER(private, int, m_v1)
-   CTRL_MEMBER(private, int, m_v2) CTRL_WITH_VERSION(2)
+   CTRL_MEMBER(private, int, m_v2)
+         CTRL_WITH_VERSION(2)
    CTRL_END_MEMBERS()
 };
 
-bool testVersion() {
-   std::cout << "testVersion" << std::endl;
+bool testWithVersion() {
+   std::cout << "testWithVersion" << std::endl;
    std::cout << "-----------" << std::endl;
-   VersionedClass obj(1, 2);
+   WithVersionedClass obj(1, 2);
 
    long length;
    char* bytes = ctrl::toBinary(obj, length, 1);
    writeBytes(bytes, length);
-   VersionedClass* newObj = ctrl::fromBinary<VersionedClass>(bytes, length, 1);
+   WithVersionedClass* newObj = ctrl::fromBinary<WithVersionedClass>(bytes, length, 1);
 
    if (newObj->getV1() != 1 || newObj->getV2() != 0) {
       delete newObj;
@@ -1639,7 +1688,7 @@ bool testVersion() {
 
    bytes = ctrl::toBinary(obj, length, 2);
    writeBytes(bytes, length);
-   newObj = ctrl::fromBinary<VersionedClass>(bytes, length, 2);
+   newObj = ctrl::fromBinary<WithVersionedClass>(bytes, length, 2);
 
    if (newObj->getV1() != 1 || newObj->getV2() != 2) {
       delete newObj;
@@ -1699,6 +1748,417 @@ bool testCorruptData() {
 
 //******************************************************************************
 
+class XmlAsAttributeMapElement {
+public:
+
+   bool operator==(XmlAsAttributeMapElement that) const {
+      return m_foo == that.m_foo && m_bar == that.m_bar;
+   }
+
+   XmlAsAttributeMapElement(std::string foo, bool bar) : m_foo(foo), m_bar(bar) {}
+   CTRL_BEGIN_MEMBERS(XmlAsAttributeMapElement)
+   CTRL_MEMBER(private, std::string, m_foo)
+         CTRL_WITH_NAME("foo")
+         CTRL_AS_ATTRIBUTE()
+   CTRL_MEMBER(private, bool, m_bar)
+   CTRL_END_MEMBERS()
+};
+
+class XmlWithNameAsAttribute {
+public:
+   XmlWithNameAsAttribute(std::string name, int count) : m_name(name), m_count(count) {}
+
+   void add(std::string key, std::string foo, bool bar) {
+      m_map[key] = XmlAsAttributeMapElement(foo, bar);
+   }
+
+   bool operator==(XmlWithNameAsAttribute that) const {
+      return m_name == that.m_name && m_count == that.m_count && m_map == that.m_map;
+   }
+
+   CTRL_BEGIN_MEMBERS(XmlWithNameAsAttribute)
+
+      CTRL_MEMBER(private, std::string, m_name)
+            CTRL_WITH_NAME("name")
+            CTRL_AS_ATTRIBUTE()
+
+      CTRL_MEMBER(private, int, m_count)
+
+      typedef std::map<std::string, XmlAsAttributeMapElement> MyMap;
+      CTRL_MEMBER(private, MyMap, m_map)
+            CTRL_AS_ATTRIBUTE()
+
+   CTRL_END_MEMBERS()
+};
+
+bool testXmlWithNameAsAttribute() {
+   std::cout << "testXmlWithNameAsAttribute" << std::endl;
+   std::cout << "--------------------------" << std::endl;
+
+   XmlWithNameAsAttribute obj("Gerrit", 42);
+   obj.add("G", "Gerrit", true);
+   obj.add("A", "Alex", false);
+   obj.add("P", "Paul", false);
+
+   std::string xml = ctrl::toXml(obj);
+   std::cout << xml << std::endl;
+
+   std::string expected = std::string("<root name=\"Gerrit\">") +
+                          "<__version>1</__version>" +
+                          "<m_count>42</m_count>" +
+                          "<m_map>" +
+                          "<item key=\"A\">" +
+                          "<value foo=\"Alex\">" +
+                          "<m_bar>false</m_bar>" +
+                          "</value>" +
+                          "</item>" +
+                          "<item key=\"G\">" +
+                          "<value foo=\"Gerrit\">" +
+                          "<m_bar>true</m_bar>" +
+                          "</value>" +
+                          "</item>" +
+                          "<item key=\"P\">" +
+                          "<value foo=\"Paul\">" +
+                          "<m_bar>false</m_bar>" +
+                          "</value>" +
+                          "</item>" +
+                          "</m_map>" +
+                          "</root>";
+
+   if (expected != xml) {
+      std::cout << "Incorrect XML: ";
+      return false;
+   }
+
+   XmlWithNameAsAttribute* newObj = ctrl::fromXml<XmlWithNameAsAttribute>(xml);
+   return testAndDelete(newObj, obj, 0);
+}
+
+//******************************************************************************
+
+namespace typemanip {
+
+   struct T0 {};
+   struct T1 {};
+   struct T2 {};
+   struct T3 {};
+   struct T4 {};
+
+   template <class T1_, class T2_>
+   bool testSameType(T1_ t1, T2_ t2) {
+      if (!ctrl::Private::IsSameType<T1_, T2_>::value) {
+         return false;
+      } else {
+         return true;
+      }
+   }
+
+   bool testTypeListContains() {
+      std::cout << "testTypeListContains" << std::endl;
+      std::cout << "--------------------" << std::endl;
+
+      typedef ctrl::Private::TypeList<T0, ctrl::Private::TypeList<T1, ctrl::Private::TypeList<T2, ctrl::Private::NullType>>> TList;
+      if (!ctrl::Private::TypeListContains<T1, TList>::value) {
+         return false;
+      }
+      if (ctrl::Private::TypeListContains<T3, TList>::value) {
+         return false;
+      }
+      return true;
+   }
+
+   bool testUniqueTypeList() {
+      std::cout << "testUniqueTypeList" << std::endl;
+      std::cout << "------------------" << std::endl;
+      typedef ctrl::Private::TypeList<T0, ctrl::Private::TypeList<T0, ctrl::Private::TypeList<T0, ctrl::Private::NullType>>> AllSameTypeList;
+      typedef typename ctrl::Private::UniquifyTypeList<AllSameTypeList>::Result SingleResult;
+      if (!testSameType(SingleResult(), T0())) {
+         return false;
+      }
+
+      typedef ctrl::Private::TypeList<T0, ctrl::Private::TypeList<T1, ctrl::Private::TypeList<T1, ctrl::Private::TypeList<T0,
+               ctrl::Private::TypeList<T2, ctrl::Private::NullType>>>>> DuplicateTypeList;
+
+      typedef typename ctrl::Private::UniquifyTypeList<DuplicateTypeList>::Result DuplicatesRemoved;
+      typedef ctrl::Private::TypeList<T1, ctrl::Private::TypeList<T0, ctrl::Private::TypeList<T2, ctrl::Private::NullType>>> Expected;
+      if (!testSameType(DuplicatesRemoved(), Expected())) {
+         return false;
+      }
+      return true;
+   }
+
+} // namespace typemanip
+
+namespace inheritance {
+
+   class Base0 {
+      CTRL_BEGIN_MEMBERS(Base0)
+         CTRL_TYPE_ID_FIELD_NAME("base0")
+      CTRL_MEMBER(private, int, val)
+      CTRL_END_MEMBERS()
+   };
+
+   class Base1 {
+      CTRL_BEGIN_MEMBERS(Base1)
+         CTRL_TYPE_ID_FIELD_NAME("base1")
+      CTRL_END_MEMBERS()
+   };
+
+   class Base2 : public Base0 {
+      CTRL_BEGIN_MEMBERS(Base2)
+      CTRL_BASE_CLASS(Base0)
+      CTRL_END_MEMBERS()
+   };
+
+   class Multi1 : public Base1, public Base2 {
+      CTRL_BEGIN_MEMBERS(Multi1)
+      CTRL_BASE_CLASS(Base1)
+      CTRL_BASE_CLASS(Base2)
+      CTRL_END_MEMBERS()
+   };
+
+   class Multi2 : public Multi1 {
+      CTRL_BEGIN_MEMBERS(Multi2)
+      CTRL_BASE_CLASS(Multi1)
+      CTRL_END_MEMBERS()
+   };
+
+   class Single1 : public Base2 {
+      CTRL_BEGIN_MEMBERS(Single1)
+      CTRL_BASE_CLASS(Base2)
+      CTRL_END_MEMBERS()
+   };
+
+   class Diamond1 : public virtual Base0 {
+      CTRL_BEGIN_MEMBERS(Diamond1)
+      CTRL_BASE_CLASS(Base0)
+      CTRL_END_MEMBERS()
+   };
+
+   class Diamond2 : public virtual Base0 {
+      CTRL_BEGIN_MEMBERS(Diamond2)
+      CTRL_BASE_CLASS(Base0)
+      CTRL_END_MEMBERS()
+   };
+
+   class Single2 : public Diamond1, public Diamond2 {
+      CTRL_BEGIN_MEMBERS(Single2)
+      CTRL_BASE_CLASS(Diamond1)
+      CTRL_BASE_CLASS(Diamond2)
+      CTRL_END_MEMBERS()
+   };
+
+   template <class T1_, class T2_>
+   bool singleRootChecker(T1_ concreteClass, T2_ expectedRoots, bool expected) {
+      typedef ctrl::Private::DerivationRoots<T1_> DerivationRoots;
+      if (!typemanip::testSameType(typename DerivationRoots::Roots(), expectedRoots)) {
+         return false;
+      } else if (DerivationRoots::isSingleRoot != expected) {
+         return false;
+      }
+      return true;
+   }
+
+   bool testDerivationRoots() {
+      std::cout << "testDerivationRoots" << std::endl;
+      std::cout << "-------------------" << std::endl;
+      if (!singleRootChecker(inheritance::Base0(), inheritance::Base0(), true)) return false;
+      if (!singleRootChecker(inheritance::Base1(), inheritance::Base1(), true)) return false;
+      if (!singleRootChecker(inheritance::Base2(), inheritance::Base0(), true)) return false;
+      typedef ctrl::Private::TypeList<inheritance::Base1, ctrl::Private::TypeList<Base0, ctrl::Private::NullType>> Expected;
+      if (!singleRootChecker(inheritance::Multi1(), Expected(), false)) return false;
+      if (!singleRootChecker(inheritance::Multi2(), Expected(), false)) return false;
+      if (!singleRootChecker(inheritance::Single1(), inheritance::Base0(), true)) return false;
+      if (!singleRootChecker(inheritance::Single2(), inheritance::Base0(), true)) return false;
+      return true;
+   }
+
+   CTRL_POLYMORPH(Base0)
+   CTRL_POLYMORPH(Base1)
+   CTRL_POLYMORPH(Base2)
+   CTRL_POLYMORPH(Multi1)
+   CTRL_POLYMORPH(Multi2)
+   CTRL_POLYMORPH(Single1)
+   CTRL_POLYMORPH(Single2)
+   CTRL_POLYMORPH(Diamond1)
+   CTRL_POLYMORPH(Diamond2)
+
+   class Document {
+      CTRL_BEGIN_MEMBERS(Document)
+      CTRL_MEMBER(private, std::vector<std::shared_ptr<Base0>>, base0)
+      CTRL_MEMBER(private, std::vector<std::shared_ptr<Base1>>, base1)
+      CTRL_END_MEMBERS()
+
+   public:
+      static Document invalid() {
+         Document doc;
+         doc.base0.push_back(std::shared_ptr<Base0>(new Base0()));
+         doc.base0.push_back(std::shared_ptr<Base0>(new Base2()));
+         doc.base1.push_back(std::shared_ptr<Base1>(new Multi1()));
+         return doc;
+      }
+
+      static Document valid() {
+         Document doc;
+         doc.base0.push_back(std::shared_ptr<Base0>(new Base0()));
+         doc.base0.push_back(std::shared_ptr<Base0>(new Base2()));
+         doc.base1.push_back(std::shared_ptr<Base1>(new Base1()));
+         return doc;
+      }
+
+      static Document diamond() {
+         Document doc;
+         doc.base0.push_back(std::shared_ptr<Base0>(new Diamond1()));
+         doc.base0.push_back(std::shared_ptr<Base0>(new Diamond2()));
+         doc.base0.push_back(std::shared_ptr<Base0>(new Single2()));
+         return doc;
+      }
+   };
+
+   bool testSingleRootAssertion(Document doc, bool valid) {
+      bool exceptionThrown = false;
+      try {
+         std::cout << ctrl::toXml(doc, true);
+      } catch (...) {
+         exceptionThrown = true;
+      }
+      return exceptionThrown == valid;
+   }
+
+   bool testSingleRootAssertion() {
+      std::cout << "testSingleRootAssertion" << std::endl;
+      std::cout << "-----------------------" << std::endl;
+      if (testSingleRootAssertion(Document::valid(), true)) return false;
+      if (testSingleRootAssertion(Document::invalid(), false)) return false;
+      if (testSingleRootAssertion(Document::diamond(), true)) return false;
+      return true;
+   }
+
+} // namespace inheritance
+
+namespace idfield {
+
+   class Double {
+      CTRL_BEGIN_MEMBERS(Double)
+      CTRL_MEMBER(private, int, foo)
+            CTRL_AS_ID_FIELD()
+      CTRL_MEMBER(private, int, bar)
+            CTRL_AS_ID_FIELD()
+      CTRL_MEMBER(private, int, baz)
+      CTRL_END_MEMBERS()
+   };
+
+   class Single {
+      CTRL_BEGIN_MEMBERS(Single)
+      CTRL_MEMBER(private, int, foo)
+      CTRL_MEMBER(private, int, bar)
+            CTRL_AS_ID_FIELD()
+      CTRL_MEMBER(private, int, baz)
+      CTRL_END_MEMBERS()
+   };
+
+   class First {
+      CTRL_BEGIN_MEMBERS(First)
+      CTRL_MEMBER(private, int, foo)
+            CTRL_AS_ID_FIELD()
+      CTRL_MEMBER(private, int, bar)
+      CTRL_MEMBER(private, int, baz)
+      CTRL_END_MEMBERS()
+   };
+
+   class None {
+      CTRL_BEGIN_MEMBERS(None)
+      CTRL_MEMBER(private, int, foo)
+      CTRL_MEMBER(private, int, bar)
+      CTRL_MEMBER(private, int, baz)
+      CTRL_END_MEMBERS()
+   };
+
+   bool testGetIdField() {
+      std::cout << "testGetIdField" << std::endl;
+      std::cout << "--------------" << std::endl;
+
+      typedef ctrl::Private::RootHasIdField<Single> SingleId;
+      if (SingleId::present != true) return false;
+      if (SingleId::error != false) return false;
+      if (SingleId::index != 1) return false;
+
+      typedef ctrl::Private::RootHasIdField<First> FirstId;
+      if (FirstId::present != true) return false;
+      if (FirstId::error != false) return false;
+      if (FirstId::index != 0) return false;
+
+      typedef ctrl::Private::RootHasIdField<None> NoneId;
+      if (NoneId::present != false) return false;
+      if (NoneId::error != false) return false;
+      if (NoneId::index != -1) return false;
+
+      typedef ctrl::Private::RootHasIdField<Double> DoubleId;
+      if (DoubleId::present != true) return false;
+      if (DoubleId::error != true) return false;
+      if (DoubleId::index != 1) return false;
+
+      return true;
+   }
+
+} // namespace idfield
+
+//******************************************************************************
+
+class Employee {
+
+   CTRL_BEGIN_MEMBERS(Employee)
+   CTRL_MEMBER(public, std::string, m_ssid)
+         CTRL_AS_ATTRIBUTE()
+         CTRL_AS_ID_FIELD()
+   CTRL_MEMBER(public, std::string, m_name)
+   CTRL_MEMBER(public, int, m_age)
+         CTRL_AS_ATTRIBUTE()
+   CTRL_END_MEMBERS()
+
+   Employee(std::string ssid, std::string name, int age)
+         : m_ssid(ssid), m_name(name), m_age(age) {}
+
+   bool operator==(const Employee& that) {
+      return m_ssid == that.m_ssid && m_name == that.m_name && m_age == that.m_age;
+   }
+};
+
+class Company {
+   CTRL_BEGIN_MEMBERS(Company)
+   CTRL_MEMBER(public, std::vector<std::shared_ptr<Employee>>, m_employees)
+   CTRL_END_MEMBERS();
+
+   Company(int dummy) {
+      m_employees.push_back(std::shared_ptr<Employee>(new Employee("12345", "Gerrit", 36)));
+      m_employees.push_back(std::shared_ptr<Employee>(new Employee("67890", "Alex", 42)));
+      m_employees.push_back(m_employees[0]);
+   }
+
+   bool operator==(const Company& that) {
+      if (m_employees.size() != that.m_employees.size()) {
+         return false;
+      }
+      for (int i = 0; i < m_employees.size(); ++i) {
+         if (!(*m_employees[i] == *that.m_employees[i])) {
+            return false;
+         }
+      }
+      return true;
+   }
+};
+
+bool testCustomIdField() {
+   std::cout << "testCustomIdField" << std::endl;
+   std::cout << "-----------------" << std::endl;
+
+   Company company(0);
+
+   return testSerialization(company);
+}
+
+//******************************************************************************
+
 int main() {
    typedef bool (*TestFunction)();
 
@@ -1749,8 +2209,17 @@ int main() {
    tests.push_back(&testInitialize);
    tests.push_back(&testLittleEndian);
    tests.push_back(&testBigEndian);
-   tests.push_back(&testVersion);
+   tests.push_back(&testWithVersion);
    tests.push_back(&testCorruptData);
+
+   tests.push_back(&testXmlWithNameAsAttribute);
+
+   tests.push_back(&typemanip::testTypeListContains);
+   tests.push_back(&typemanip::testUniqueTypeList);
+   tests.push_back(&inheritance::testDerivationRoots);
+   tests.push_back(&inheritance::testSingleRootAssertion);
+   tests.push_back(&idfield::testGetIdField);
+   tests.push_back(&testCustomIdField);
 
    for ( typename std::vector<TestFunction>::const_iterator iter = tests.begin();
            iter != tests.end(); ++iter ) {
@@ -1763,28 +2232,3 @@ int main() {
       }
    }
 }
-
-/*
- * Copyright (C) 2010, 2012, 2016 by Gerrit Daniels <gerrit.daniels@gmail.com>
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * 1. Redistributions of source code must retain the above copyright notice, this
- *    list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright notice,
- *    this list of conditions and the following disclaimer in the documentation
- *    and/or other materials provided with the distribution.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
- * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */

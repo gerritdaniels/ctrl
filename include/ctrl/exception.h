@@ -1,32 +1,3 @@
-#ifndef CTRLEXCEPTION_H_
-#define CTRLEXCEPTION_H_
-
-#include <string>
-#include <exception>
-
-namespace ctrl {
-
-class Exception : public std::exception {
-public:
-   Exception(const std::string& reason) : m_reason(reason) {
-
-   }
-
-   Exception(const Exception& that) : m_reason(that.m_reason) {
-
-   }
-
-   virtual ~Exception() throw() {}
-
-   virtual const char* what() const throw () { return m_reason.c_str(); }
-   
-private:
-   std::string m_reason;
-};
-
-} // namespace ctrl
-
-#endif // CTRLEXCEPTION_H_
 
 /*
  * Copyright (C) 2010, 2016 by Gerrit Daniels <gerrit.daniels@gmail.com>
@@ -52,3 +23,33 @@ private:
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
+#ifndef CTRLEXCEPTION_H_
+#define CTRLEXCEPTION_H_
+
+#include <string>
+#include <exception>
+
+namespace ctrl {
+
+class Exception : public std::exception {
+public:
+   Exception(const std::string& reason) : m_reason(reason) {
+
+   }
+
+   Exception(const Exception& that) : m_reason(that.m_reason) {
+
+   }
+
+   virtual ~Exception() throw() {}
+
+   virtual const char* what() const throw () { return m_reason.c_str(); }
+
+private:
+   std::string m_reason;
+};
+
+} // namespace ctrl
+
+#endif // CTRLEXCEPTION_H_

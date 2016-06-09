@@ -1,70 +1,3 @@
-#ifndef ABSTRACTWRITEBUFFER_H
-#define ABSTRACTWRITEBUFFER_H
-
-#include <string>
-#include <ctrl/exception.h>
-#include <ctrl/buffer/writePointerRepository.h>
-
-namespace ctrl {
-
-namespace Private {
-
-   class AbstractWriteBuffer
-   {
-   public:
-      virtual ~AbstractWriteBuffer();
-
-      WritePointerRepository& getPointerRepository();
-
-      virtual void enterObject() throw(Exception) = 0;
-      virtual void enterMember(const char* name) throw(Exception) = 0;
-      virtual void leaveMember() throw(Exception) = 0;
-      virtual void leaveObject() throw(Exception) = 0;
-
-      virtual void enterCollection() throw(Exception) = 0;
-      virtual void nextCollectionElement() throw(Exception) = 0;
-      virtual void leaveCollection() throw(Exception) = 0;
-
-      virtual void enterMap() throw(Exception) = 0;
-      virtual void enterKey() throw(Exception) = 0;
-      virtual void leaveKey() throw(Exception) = 0;
-      virtual void enterValue() throw(Exception) = 0;
-      virtual void leaveValue() throw(Exception) = 0;
-      virtual void leaveMap() throw(Exception) = 0;
-
-      virtual void appendVersion(const int& version) throw(Exception) = 0;
-      virtual void appendBits(const char* data, long length) throw(Exception) = 0;
-      virtual void appendCollectionSize(const std::size_t& size) throw(Exception) = 0;
-      virtual void appendPointerId(const int& id) throw(Exception) = 0;
-      virtual void appendTypeId(const char* val) throw(Exception) = 0;
-
-      virtual void append(const bool& val) throw(Exception) = 0;
-      virtual void append(const char& val) throw(Exception) = 0;
-      virtual void append(const short& val) throw(Exception) = 0;
-      virtual void append(const int& val) throw(Exception) = 0;
-      virtual void append(const long& val) throw(Exception) = 0;
-      virtual void append(const long long& val) throw(Exception) = 0;
-      virtual void append(const unsigned char& val) throw(Exception) = 0;
-      virtual void append(const unsigned short& val) throw(Exception) = 0;
-      virtual void append(const unsigned int& val) throw(Exception) = 0;
-      virtual void append(const unsigned long& val) throw(Exception) = 0;
-      virtual void append(const unsigned long long& val) throw(Exception) = 0;
-      virtual void append(const float& val) throw(Exception) = 0;
-      virtual void append(const double& val) throw(Exception) = 0;
-      virtual void append(const std::string& val) throw(Exception) = 0;
-
-   protected:
-      AbstractWriteBuffer();
-
-   private:
-      WritePointerRepository m_pointerRepository;
-   };
-
-} // namespace Private
-
-} // namespace ctrl
-
-#endif // ABSTRACTWRITEBUFFER_H
 
 /*
  * Copyright (C) 2016 by Gerrit Daniels <gerrit.daniels@gmail.com>
@@ -90,3 +23,73 @@ namespace Private {
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
+#ifndef ABSTRACTWRITEBUFFER_H
+#define ABSTRACTWRITEBUFFER_H
+
+#include <string>
+#include <ctrl/exception.h>
+#include <ctrl/buffer/writePointerRepository.h>
+
+namespace ctrl {
+
+   class Context;
+
+   class AbstractWriteBuffer
+   {
+   public:
+      virtual ~AbstractWriteBuffer();
+
+      Private::WritePointerRepository& getPointerRepository();
+
+      virtual void enterObject(const Context& context) throw(Exception) = 0;
+      virtual void enterMember(const Context& context, const char* suggested = 0) throw(Exception) = 0;
+      virtual void leaveMember(const Context& context) throw(Exception) = 0;
+      virtual void leaveObject(const Context& context) throw(Exception) = 0;
+
+      virtual void enterIdField(const Context& context) throw(Exception) = 0;
+      virtual void appendNullId(const Context& context) throw(Exception) = 0;
+      virtual void appendNonNullId(const Context& context) throw(Exception) = 0;
+      virtual void leaveIdField(const Context& context) throw(Exception) = 0;
+
+      virtual void enterCollection(const Context& context) throw(Exception) = 0;
+      virtual void nextCollectionElement(const Context& context) throw(Exception) = 0;
+      virtual void leaveCollection(const Context& context) throw(Exception) = 0;
+
+      virtual void enterMap(const Context& context) throw(Exception) = 0;
+      virtual void enterKey(const Context& context) throw(Exception) = 0;
+      virtual void leaveKey(const Context& context) throw(Exception) = 0;
+      virtual void enterValue(const Context& context) throw(Exception) = 0;
+      virtual void leaveValue(const Context& context) throw(Exception) = 0;
+      virtual void leaveMap(const Context& context) throw(Exception) = 0;
+
+      virtual void appendVersion(const int& version, const Context& context) throw(Exception) = 0;
+      virtual void appendBits(const char* data, long length, const Context& context) throw(Exception) = 0;
+      virtual void appendCollectionSize(const std::size_t& size, const Context& context) throw(Exception) = 0;
+      virtual void appendTypeId(const std::string& val, const Context& context) throw(Exception) = 0;
+
+      virtual void append(const bool& val, const Context& context) throw(Exception) = 0;
+      virtual void append(const char& val, const Context& context) throw(Exception) = 0;
+      virtual void append(const short& val, const Context& context) throw(Exception) = 0;
+      virtual void append(const int& val, const Context& context) throw(Exception) = 0;
+      virtual void append(const long& val, const Context& context) throw(Exception) = 0;
+      virtual void append(const long long& val, const Context& context) throw(Exception) = 0;
+      virtual void append(const unsigned char& val, const Context& context) throw(Exception) = 0;
+      virtual void append(const unsigned short& val, const Context& context) throw(Exception) = 0;
+      virtual void append(const unsigned int& val, const Context& context) throw(Exception) = 0;
+      virtual void append(const unsigned long& val, const Context& context) throw(Exception) = 0;
+      virtual void append(const unsigned long long& val, const Context& context) throw(Exception) = 0;
+      virtual void append(const float& val, const Context& context) throw(Exception) = 0;
+      virtual void append(const double& val, const Context& context) throw(Exception) = 0;
+      virtual void append(const std::string& val, const Context& context) throw(Exception) = 0;
+
+   protected:
+      AbstractWriteBuffer();
+
+   private:
+      Private::WritePointerRepository m_pointerRepository;
+   };
+
+} // namespace ctrl
+
+#endif // ABSTRACTWRITEBUFFER_H

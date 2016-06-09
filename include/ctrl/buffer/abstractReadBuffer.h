@@ -1,79 +1,3 @@
-#ifndef ABSTRACTREADBUFFER_H
-#define ABSTRACTREADBUFFER_H
-
-#include <string>
-#include <boost/shared_ptr.hpp>
-#include <boost/weak_ptr.hpp>
-#include <ctrl/buffer/readPointerRepository.h>
-#include <ctrl/buffer/readRawPointerRepository.h>
-#include <ctrl/exception.h>
-
-namespace ctrl {
-
-namespace Private {
-
-   class AbstractReadBuffer
-   {
-   public:
-      virtual ~AbstractReadBuffer();
-
-      ReadPointerRepository<std::shared_ptr, std::weak_ptr>& getStdPointerRepository();
-      ReadPointerRepository<boost::shared_ptr, boost::weak_ptr>& getBoostPointerRepository();
-      ReadRawPointerRepository& getRawPointerRepository();
-
-      virtual void enterObject() throw(Exception) = 0;
-      virtual void enterMember(const char* name) throw(Exception) = 0;
-      virtual void leaveMember() throw(Exception) = 0;
-      virtual void leaveObject() throw(Exception) = 0;
-
-      virtual void enterCollection() throw(Exception) = 0;
-      virtual void nextCollectionElement() throw(Exception) = 0;
-      virtual void leaveCollection() throw(Exception) = 0;
-
-      virtual void enterMap() throw(Exception) = 0;
-      virtual void enterKey() throw(Exception) = 0;
-      virtual void leaveKey() throw(Exception) = 0;
-      virtual void enterValue() throw(Exception) = 0;
-      virtual void leaveValue() throw(Exception) = 0;
-      virtual void leaveMap() throw(Exception) = 0;
-
-      virtual void readVersion(int& version) throw(Exception) = 0;
-      virtual void readBits(char* data, long length) throw(Exception) = 0;
-      virtual void readCollectionSize(std::size_t& size) throw(Exception) = 0;
-      virtual void readPointerId(int& id) throw(Exception) = 0;
-      virtual void readTypeId(std::string& val) throw(Exception) = 0;
-
-      virtual void read(bool& val) throw(Exception) = 0;
-      virtual void read(char& val) throw(Exception) = 0;
-      virtual void read(short& val) throw(Exception) = 0;
-      virtual void read(int& val) throw(Exception) = 0;
-      virtual void read(long& val) throw(Exception) = 0;
-      virtual void read(long long& val) throw(Exception) = 0;
-      virtual void read(unsigned char& val) throw(Exception) = 0;
-      virtual void read(unsigned short& val) throw(Exception) = 0;
-      virtual void read(unsigned int& val) throw(Exception) = 0;
-      virtual void read(unsigned long& val) throw(Exception) = 0;
-      virtual void read(unsigned long long& val) throw(Exception) = 0;
-      virtual void read(float& val) throw(Exception) = 0;
-      virtual void read(double& val) throw(Exception) = 0;
-      virtual void read(std::string& val) throw(Exception) = 0;
-
-   protected:
-      AbstractReadBuffer();
-
-   private:
-      AbstractReadBuffer(const AbstractReadBuffer&);
-
-      ReadPointerRepository<std::shared_ptr, std::weak_ptr> m_stdPointerRepository;
-      ReadPointerRepository<boost::shared_ptr, boost::weak_ptr> m_boostPointerRepository;
-      ReadRawPointerRepository m_rawPointerRepository;
-   };
-
-} // namespace Private
-
-} // namespace ctrl
-
-#endif // ABSTRACTREADBUFFER_H
 
 /*
  * Copyright (C) 2016 by Gerrit Daniels <gerrit.daniels@gmail.com>
@@ -99,3 +23,81 @@ namespace Private {
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
+#ifndef ABSTRACTREADBUFFER_H
+#define ABSTRACTREADBUFFER_H
+
+#include <string>
+#include <boost/shared_ptr.hpp>
+#include <boost/weak_ptr.hpp>
+#include <ctrl/buffer/readPointerRepository.h>
+#include <ctrl/buffer/readRawPointerRepository.h>
+#include <ctrl/exception.h>
+
+namespace ctrl {
+
+   class Context;
+
+   class AbstractReadBuffer
+   {
+   public:
+      virtual ~AbstractReadBuffer();
+
+      Private::ReadPointerRepository<std::shared_ptr, std::weak_ptr>& getStdPointerRepository();
+      Private::ReadPointerRepository<boost::shared_ptr, boost::weak_ptr>& getBoostPointerRepository();
+      Private::ReadRawPointerRepository& getRawPointerRepository();
+
+      virtual void enterObject(const Context& context) throw(Exception) = 0;
+      virtual void enterMember(const Context& context, const char* suggested = 0) throw(Exception) = 0;
+      virtual void leaveMember(const Context& context) throw(Exception) = 0;
+      virtual void leaveObject(const Context& context) throw(Exception) = 0;
+
+      virtual void enterIdField(const Context& context) throw(Exception) = 0;
+      virtual bool isNullId(const Context& context) throw(Exception) = 0;
+      virtual void leaveIdField(const Context& context) throw(Exception) = 0;
+
+      virtual void enterCollection(const Context& context) throw(Exception) = 0;
+      virtual void nextCollectionElement(const Context& context) throw(Exception) = 0;
+      virtual void leaveCollection(const Context& context) throw(Exception) = 0;
+
+      virtual void enterMap(const Context& context) throw(Exception) = 0;
+      virtual void enterKey(const Context& context) throw(Exception) = 0;
+      virtual void leaveKey(const Context& context) throw(Exception) = 0;
+      virtual void enterValue(const Context& context) throw(Exception) = 0;
+      virtual void leaveValue(const Context& context) throw(Exception) = 0;
+      virtual void leaveMap(const Context& context) throw(Exception) = 0;
+
+      virtual void readVersion(int& version, const Context& context) throw(Exception) = 0;
+      virtual void readBits(char* data, long length, const Context& context) throw(Exception) = 0;
+      virtual void readCollectionSize(std::size_t& size, const Context& context) throw(Exception) = 0;
+      virtual void readTypeId(std::string& val, const Context& context) throw(Exception) = 0;
+
+      virtual void read(bool& val, const Context& context) throw(Exception) = 0;
+      virtual void read(char& val, const Context& context) throw(Exception) = 0;
+      virtual void read(short& val, const Context& context) throw(Exception) = 0;
+      virtual void read(int& val, const Context& context) throw(Exception) = 0;
+      virtual void read(long& val, const Context& context) throw(Exception) = 0;
+      virtual void read(long long& val, const Context& context) throw(Exception) = 0;
+      virtual void read(unsigned char& val, const Context& context) throw(Exception) = 0;
+      virtual void read(unsigned short& val, const Context& context) throw(Exception) = 0;
+      virtual void read(unsigned int& val, const Context& context) throw(Exception) = 0;
+      virtual void read(unsigned long& val, const Context& context) throw(Exception) = 0;
+      virtual void read(unsigned long long& val, const Context& context) throw(Exception) = 0;
+      virtual void read(float& val, const Context& context) throw(Exception) = 0;
+      virtual void read(double& val, const Context& context) throw(Exception) = 0;
+      virtual void read(std::string& val, const Context& context) throw(Exception) = 0;
+
+   protected:
+      AbstractReadBuffer();
+
+   private:
+      AbstractReadBuffer(const AbstractReadBuffer&);
+
+      Private::ReadPointerRepository<std::shared_ptr, std::weak_ptr> m_stdPointerRepository;
+      Private::ReadPointerRepository<boost::shared_ptr, boost::weak_ptr> m_boostPointerRepository;
+      Private::ReadRawPointerRepository m_rawPointerRepository;
+   };
+
+} // namespace ctrl
+
+#endif // ABSTRACTREADBUFFER_H

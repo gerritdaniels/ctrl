@@ -1,81 +1,3 @@
-#ifndef XMLWRITEBUFFER_H
-#define XMLWRITEBUFFER_H
-
-#include <ctrl/buffer/abstractWriteBuffer.h>
-#include <ctrl/rapidxml/rapidxml.hpp>
-#include <stack>
-#include <sstream>
-#include <string>
-
-namespace ctrl {
-
-namespace Private {
-
-   class XmlWriteBuffer : public AbstractWriteBuffer {
-   public:
-      XmlWriteBuffer();
-
-      virtual void enterObject() throw(Exception);
-      virtual void enterMember(const char* name) throw(Exception);
-      virtual void leaveMember() throw(Exception);
-      virtual void leaveObject() throw(Exception);
-
-      virtual void enterCollection() throw(Exception);
-      virtual void nextCollectionElement() throw(Exception);
-      virtual void leaveCollection() throw(Exception);
-
-      virtual void enterMap() throw(Exception);
-      virtual void enterKey() throw(Exception);
-      virtual void leaveKey() throw(Exception);
-      virtual void enterValue() throw(Exception);
-      virtual void leaveValue() throw(Exception);
-      virtual void leaveMap() throw(Exception);
-
-      virtual void appendVersion(const int& version) throw(Exception);
-      virtual void appendBits(const char* data, long length) throw(Exception);
-      virtual void appendCollectionSize(const std::size_t& size) throw(Exception);
-      virtual void appendPointerId(const int& id) throw(Exception);
-      virtual void appendTypeId(const char* val) throw(Exception);
-
-      virtual void append(const bool& val) throw(Exception);
-      virtual void append(const char& val) throw(Exception);
-      virtual void append(const short& val) throw(Exception);
-      virtual void append(const int& val) throw(Exception);
-      virtual void append(const long& val) throw(Exception);
-      virtual void append(const long long& val) throw(Exception);
-      virtual void append(const unsigned char& val) throw(Exception);
-      virtual void append(const unsigned short& val) throw(Exception);
-      virtual void append(const unsigned int& val) throw(Exception);
-      virtual void append(const unsigned long& val) throw(Exception);
-      virtual void append(const unsigned long long& val) throw(Exception);
-      virtual void append(const float& val) throw(Exception);
-      virtual void append(const double& val) throw(Exception);
-      virtual void append(const std::string& val) throw(Exception);
-
-      std::string getOutput() const;
-
-   private:
-      template <class T>
-      void writeValueAsString(const T& val) {
-         m_converter << val;
-         const char* converted = m_document.allocate_string(m_converter.str().c_str());
-         m_stack.top()->value(converted);
-         m_converter.str("");
-         m_converter.clear();
-      }
-
-      rapidxml::xml_document<> m_document;
-      std::stack<rapidxml::xml_node<>*> m_stack;
-      std::ostringstream m_converter;
-
-      bool m_collectionStart;
-   };
-
-} // namespace Private
-
-} // namespace ctrl
-
-#endif // XMLWRITEBUFFER_H
 
 /*
  * Copyright (C) 2016 by Gerrit Daniels <gerrit.daniels@gmail.com>
@@ -101,3 +23,95 @@ namespace Private {
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
+#ifndef XMLWRITEBUFFER_H
+#define XMLWRITEBUFFER_H
+
+#include <ctrl/buffer/abstractWriteBuffer.h>
+#include <ctrl/buffer/bufferUtil.h>
+#include <ctrl/rapidxml/rapidxml.hpp>
+#include <stack>
+#include <sstream>
+#include <string>
+
+namespace ctrl {
+
+namespace Private {
+
+   class XmlWriteBuffer : public ctrl::AbstractWriteBuffer {
+   public:
+      XmlWriteBuffer(bool prettyPrint);
+
+      virtual void enterObject(const Context& context) throw(Exception);
+      virtual void enterMember(const Context& context, const char* suggested = 0) throw(Exception);
+      virtual void leaveMember(const Context& context) throw(Exception);
+      virtual void leaveObject(const Context& context) throw(Exception);
+
+      virtual void enterIdField(const Context& context) throw(Exception);
+      virtual void appendNullId(const Context& context) throw(Exception);
+      virtual void appendNonNullId(const Context& context) throw(Exception);
+      virtual void leaveIdField(const Context& context) throw(Exception);
+
+      virtual void enterCollection(const Context& context) throw(Exception);
+      virtual void nextCollectionElement(const Context& context) throw(Exception);
+      virtual void leaveCollection(const Context& context) throw(Exception);
+
+      virtual void enterMap(const Context& context) throw(Exception);
+      virtual void enterKey(const Context& context) throw(Exception);
+      virtual void leaveKey(const Context& context) throw(Exception);
+      virtual void enterValue(const Context& context) throw(Exception);
+      virtual void leaveValue(const Context& context) throw(Exception);
+      virtual void leaveMap(const Context& context) throw(Exception);
+
+      virtual void appendVersion(const int& version, const Context& context) throw(Exception);
+      virtual void appendBits(const char* data, long length, const Context& context) throw(Exception);
+      virtual void appendCollectionSize(const std::size_t& size, const Context& context) throw(Exception);
+      virtual void appendTypeId(const std::string& val, const Context& context) throw(Exception);
+
+      virtual void append(const bool& val, const Context& context) throw(Exception);
+      virtual void append(const char& val, const Context& context) throw(Exception);
+      virtual void append(const short& val, const Context& context) throw(Exception);
+      virtual void append(const int& val, const Context& context) throw(Exception);
+      virtual void append(const long& val, const Context& context) throw(Exception);
+      virtual void append(const long long& val, const Context& context) throw(Exception);
+      virtual void append(const unsigned char& val, const Context& context) throw(Exception);
+      virtual void append(const unsigned short& val, const Context& context) throw(Exception);
+      virtual void append(const unsigned int& val, const Context& context) throw(Exception);
+      virtual void append(const unsigned long& val, const Context& context) throw(Exception);
+      virtual void append(const unsigned long long& val, const Context& context) throw(Exception);
+      virtual void append(const float& val, const Context& context) throw(Exception);
+      virtual void append(const double& val, const Context& context) throw(Exception);
+      virtual void append(const std::string& val, const Context& context) throw(Exception);
+
+      std::string getOutput() const;
+
+   private:
+      std::string unwindStack();
+
+      template <class T_>
+      void setNodeOrAttributeValue(rapidxml::xml_node<>* node, T_ val) {
+         if (!m_skipNextFundamental) {
+            const char* str = m_document.allocate_string(m_util.toString(val).c_str());
+            if (m_nextValueIsAttribute) {
+               node->append_attribute(m_document.allocate_attribute(m_attributeName, str));
+            } else {
+               node->value(str);
+            }
+         }
+      }
+
+      BufferUtil m_util;
+      rapidxml::xml_document<> m_document;
+      std::stack<rapidxml::xml_node<>*> m_stack;
+      bool m_collectionStart;
+      bool m_nextValueIsAttribute;
+      bool m_skipNextFundamental;
+      const char* m_attributeName;
+      bool m_prettyPrint;
+   };
+
+} // namespace Private
+
+} // namespace ctrl
+
+#endif // XMLWRITEBUFFER_H

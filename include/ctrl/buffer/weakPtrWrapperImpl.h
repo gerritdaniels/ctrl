@@ -1,42 +1,3 @@
-#ifndef WEAKPTRWRAPPERIMPL_H_
-#define WEAKPTRWRAPPERIMPL_H_
-
-#include <string>
-#include <ctrl/weakPtrWrapper.h>
-#include <ctrl/polymorphicSerializer.h>
-
-#include <iostream>
-#include <iomanip>
-
-namespace ctrl {
-
-namespace Private {
-
-   template <template <class> class Shared_, template <class> class Weak_, class Element_>
-   class WeakPtrWrapperImpl : public WeakPtrWrapper<Shared_>::Impl {
-   public:
-      WeakPtrWrapperImpl(Weak_<Element_>& ptr) : m_ptr(ptr) { }
-
-      virtual void assign(const Shared_<void>& ptr, const std::string& sharedName) {
-         std::string weakName = Element_::__staticClassName();
-         void* p = ptr.get();
-
-         if (PolymorphicSerializer::instance().hasCast(sharedName, weakName))
-            p = PolymorphicSerializer::instance().getCast(sharedName, weakName)(p);
-
-         m_ptr = Shared_<Element_>(ptr, reinterpret_cast<Element_*>(p));
-      }
-
-   private:
-      Weak_<Element_>& m_ptr;
-   };
-
-
-} // namespace Private
-
-} // namespace ctrl
-
-#endif // WEAKPTRWRAPPERIMPL_H_
 
 /*
  * Copyright (C) 2010, 2016 by Gerrit Daniels <gerrit.daniels@gmail.com>
@@ -62,3 +23,43 @@ namespace Private {
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
+#ifndef WEAKPTRWRAPPERIMPL_H_
+#define WEAKPTRWRAPPERIMPL_H_
+
+#include <string>
+#include <ctrl/buffer/weakPtrWrapper.h>
+#include <ctrl/polymorphicSerializer.h>
+
+#include <iostream>
+#include <iomanip>
+
+namespace ctrl {
+
+namespace Private {
+
+   template <template <class> class Shared_, template <class> class Weak_, class Element_>
+   class WeakPtrWrapperImpl : public WeakPtrWrapper<Shared_>::Impl {
+   public:
+      WeakPtrWrapperImpl(Weak_<Element_>& ptr) : m_ptr(ptr) { }
+
+      virtual void assign(const Shared_<void>& ptr, const std::string& sharedName) {
+         std::string weakName = Element_::__staticName();
+         void* p = ptr.get();
+
+         if (PolymorphicSerializer::instance().hasCast(sharedName, weakName))
+            p = PolymorphicSerializer::instance().getCast(sharedName, weakName)(p);
+
+         m_ptr = Shared_<Element_>(ptr, reinterpret_cast<Element_*>(p));
+      }
+
+   private:
+      Weak_<Element_>& m_ptr;
+   };
+
+
+} // namespace Private
+
+} // namespace ctrl
+
+#endif // WEAKPTRWRAPPERIMPL_H_

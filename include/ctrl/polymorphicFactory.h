@@ -1,40 +1,3 @@
-#ifndef POLYMORPHICFACTORY_H_
-#define POLYMORPHICFACTORY_H_
-
-#include <boost/shared_ptr.hpp>
-
-namespace ctrl {
-
-namespace Private {
-
-   class AbstractReadBuffer;
-
-   class PolymorphicFactory {
-   public:
-      class Impl {
-      public:
-         Impl();
-         virtual ~Impl();
-         virtual void* deserialize(AbstractReadBuffer& buffer, int version) const = 0;
-      };
-
-      PolymorphicFactory();
-      PolymorphicFactory(boost::shared_ptr<Impl> pimpl);
-      PolymorphicFactory(const PolymorphicFactory& that);
-
-      PolymorphicFactory& operator=(const PolymorphicFactory& that);
-
-      void* deserialize(AbstractReadBuffer& buffer, int version) const;
-
-   private:
-      boost::shared_ptr<Impl> m_pimpl;
-   };
-
-} // namespace Private
-
-} // namespace ctrl
-
-#endif // POLYMORPHICFACTORY_H_
 
 /*
  * Copyright (C) 2012, 2013, 2016 by Gerrit Daniels <gerrit.daniels@gmail.com>
@@ -60,3 +23,47 @@ namespace Private {
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
+#ifndef POLYMORPHICFACTORY_H_
+#define POLYMORPHICFACTORY_H_
+
+#include <boost/shared_ptr.hpp>
+
+namespace ctrl {
+
+class AbstractReadBuffer;
+
+class Context;
+
+class IdField;
+
+namespace Private {
+
+   class PolymorphicFactory {
+   public:
+      class Impl {
+      public:
+         Impl();
+         virtual ~Impl();
+         virtual void* deserialize(AbstractReadBuffer& buffer, const IdField& idField, const std::string& className,
+                                   int version, const Context& context) const = 0;
+      };
+
+      PolymorphicFactory();
+      PolymorphicFactory(boost::shared_ptr<Impl> pimpl);
+      PolymorphicFactory(const PolymorphicFactory& that);
+
+      PolymorphicFactory& operator=(const PolymorphicFactory& that);
+
+      void* deserialize(AbstractReadBuffer& buffer, const IdField& idField, const std::string& className,
+                        int version, const Context& context) const;
+
+   private:
+      boost::shared_ptr<Impl> m_pimpl;
+   };
+
+} // namespace Private
+
+} // namespace ctrl
+
+#endif // POLYMORPHICFACTORY_H_

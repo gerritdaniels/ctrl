@@ -1,32 +1,3 @@
-#ifndef READRAWPOINTERREPOSITORY_H
-#define READRAWPOINTERREPOSITORY_H
-
-#include <string>
-#include <map>
-
-namespace ctrl {
-
-namespace Private  {
-
-   class ReadRawPointerRepository
-   {
-   public:
-      ReadRawPointerRepository();
-
-      bool isRegistered(const int& i) const;
-      void* get(const int& i) const;
-      std::string getTypeName(const int& i) const;
-      void add(const int& i, void* p, const std::string& className);
-
-   private:
-      std::map< int, std::pair<void*, std::string> > m_ptrs;
-   };
-
-} // namespace Private
-
-} // namespace ctrl
-
-#endif // READRAWPOINTERREPOSITORY_H
 
 /*
  * Copyright (C) 2016 by Gerrit Daniels <gerrit.daniels@gmail.com>
@@ -52,3 +23,34 @@ namespace Private  {
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
+#ifndef READRAWPOINTERREPOSITORY_H
+#define READRAWPOINTERREPOSITORY_H
+
+#include <string>
+#include <unordered_map>
+#include <ctrl/idField.h>
+
+namespace ctrl {
+
+namespace Private  {
+
+   class ReadRawPointerRepository
+   {
+   public:
+      ReadRawPointerRepository();
+
+      bool isRegistered(const IdField& i) const;
+      void* get(const IdField& i) const;
+      std::string getTypeName(const IdField& i) const;
+      void add(const IdField& i, void* p, const std::string& className);
+
+   private:
+      std::unordered_map< IdField, std::pair<void*, std::string> > m_ptrs;
+   };
+
+} // namespace Private
+
+} // namespace ctrl
+
+#endif // READRAWPOINTERREPOSITORY_H

@@ -1,12 +1,13 @@
 # C++ Template Reflection Library
 
 CTRL adds data member reflection to C++ using template meta-programming techniques and the standard C++ preprocessor. 
-This reflection is used to implement serialize and deserialize functions. Since it uses the standard preprocessor no 
-special preprocessor is needed to use CTRL.
+This reflection is used to implement serialize and deserialize functions. Both binary and XML formats are supported. 
+Since it uses the standard preprocessor no special preprocessor is needed to use CTRL.
 
 ## Requirements
 
-This library depends on the [boost](http://www.boost.org/) library.
+This library depends on the [boost](http://www.boost.org/) library. It also depends on 
+[rapidxml](http://rapidxml.sourceforge.net/), but it is included in the distribution, so no download is required.
 
 ## Instalation
 
@@ -15,12 +16,16 @@ On Linux systems:
 ```sh
 $ cmake
 
+$ cd build
+
 $ make
 
 $ sudo make install
 ```
 
 ## Tutorial
+
+__Important__: each CTRL macro has to be placed on its own line.
 
 ### Composition
 
@@ -46,18 +51,27 @@ lets look at the serialize and deserialize functions.
 int main(void)
 {
     SimpleClass obj;
+    
     long length = 0;
-    char* data = ctrl::serialize(obj, length);
-    SimpleClass* ptr = ctrl::deserialize<SimpleClass>(data, length);
+    char* data = ctrl::toBinary(obj, length);
+    SimpleClass* ptr = ctrl::fromBinary<SimpleClass>(data, length);
     delete ptr; 
-    delete[] data; 
+    delete[] data;
+    
+    std::string str = ctrl::toXml(obj);
+    ptr = ctrl::fromXml<SimpleClass>(str);
+    delete ptr; 
 }
 ```
 
-As you can see the serialize function takes a const reference to the object and a reference to a long as input 
-parameters. This long is filled in to give the length of the serialized data. The deserialize function returns a 
+As you can see the toBinary function takes a const reference to the object and a reference to a long as input 
+parameters. This long is filled in to give the length of the serialized data. The fromBinary function returns a 
 pointer to an on heap allocated object. It's up to you to do the memory management of this object. If the amount of 
-data that is consumed by deserialize doesn't match the length that is passed in, an exception is thrown.
+data that is consumed by fromBinary doesn't match the length that is passed in, an exception is thrown.
+
+The toXml function takes a const reference to the object and opionally a boolean indicating that pretty printing should 
+be used. The fromXml function takes the a const string reference as argument and again returns an on heap allocated
+object.
 
 You can also use composition.
 
@@ -72,7 +86,7 @@ class CompositeClass
 ```
 
 As smart pointers you can use std::auto_ptr, std::unique_ptr, std::shared_ptr, std::weak_ptr, boost::shared_ptr and 
-boost::weak_ptr.
+boost::weak_ptr. Of course you can also use raw pointers.
 
 ```cpp
 class PointerClass
@@ -102,8 +116,8 @@ class ContainerClass
 ```
 
 As you can see the example for the map is a bit more involving, you need to define a typedef first. This is always the 
-case if you want to use types that have multiple template parameters. You can also combine smart pointers and 
-containers, so you can have a vector of shared_ptr.
+case if you want to use types that have multiple template parameters. You can combine all types of members, so you can 
+have a vector of shared_ptr.
 
 Furthermore std::pair, std::complex and std::valarray are also supported.
 
@@ -126,8 +140,7 @@ If you want to use a derived class in a polymorphic way, eg. store pointers to t
 macros CTRL_POLYMORPH (for publicly constructable classes) and CTRL_ABSTRACT_POLYMOPRH (for abstract and non publicly 
 constructable classes). These have to be put in the *.cpp file.
 
-```cpp
-
+```cp
 CTRL_POLYMORPH(CompositeClass)
 
 CTRL_POLYMORPH(DerivedClass)
@@ -185,9 +198,9 @@ private:
 
 This initialize function is called for all the base classes in the correct order.
 
-### Serialization features
+### Binary serialization features
 
-You can also set the memory alignment and endian type when you call a serialize or deserialize function. Using the 
+You can also set the memory alignment and endian type when you call a toBinary or fromBinary function. Using the 
 platform memory alignment (the default) gives the best performance but results in larger files. For the smallest file 
 use an alignment of 1. For endian support you can use the macro's CTRL_LITTLE_ENDIAN and CTRL_BIG_ENDIAN.
 
@@ -196,16 +209,70 @@ int main(void)
 {
     SimpleClass obj;
     long length = 0;
-    char* data = ctrl::serialize<4, CTRL_LITTLE_ENDIAN>(obj, length);
-    SimpleClass* ptr = ctrl::deserialize<SimpleClass, 4, CTRL_LITTLE_ENDIAN>(data, length);
+    char* data = ctrl::toBinary<4, CTRL_LITTLE_ENDIAN>(obj, length);
+    SimpleClass* ptr = ctrl::fromBinary<SimpleClass, 4, CTRL_LITTLE_ENDIAN>(data, length);
     delete ptr; 
     delete[] data; 
 }
 ```
 
+### XML serialization features
+
+You can control the serialization to XML by adding serialization properties to your members. These properties must
+always be added after the member declaration. To set class level properties place the macros right after the call to
+CTRL_BEGIN_MEMBERS.
+
+```cpp
+class CustomNames
+{
+    CTRL_BEGIN_MEMBERS(CustomNames)
+        CTRL_WITH_NAME(custom)
+    CTRL_MEMBER(private, int, m_val)
+        CTRL_WITH_NAME(val)
+    CTRL_MEMBER(private, std::string, m_text)
+    CTRL_END_MEMBERS()
+
+private:
+    int m_sum;
+};
+```
+
+#### CTRL_WITH_NAME(_name_)
+
+The with name macro on a member controls the name used for the xml element. On a class it controls the type id used 
+when the class is polymorph.
+
+#### CTRL_AS_ATTRIBUTE()
+
+This macro is only relevant for members that are of a fundamental type or of type std::string or wstring. When used the
+member gets serialized as xml attribute instead of as an element.
+
+#### CTRL_TYPE_ID_FIELD_NAME(_name_)
+
+This macro has to be used on the root of a single inheritance hierarchy (on the class, not a member), if used with 
+multiple inheritance it results in an error. It controls the name of the element that is used to store the type id in 
+the case of polymorphic classes.
+
+#### CTRL_TYPE_ID_FIELD_AS_ATTRIBUTE()
+
+This macro is also an inheritance root property. It serializes the type id field as attribute instead of as element.
+
+#### CTRL_TYPE_ID_FIELD_NAME(_name_)
+
+This macro is also an inheritance root property. Sets the name used for the id field of pointer types.
+
+#### CTRL_TYPE_ID_FIELD_AS_ATTRIBUTE()
+
+This macro is also an inheritance root property. It serializes the id field as attribute instead of as element.
+
+#### CTRL_AS_ID_FIELD()
+
+This macro is an inheritance root property, but it has to be set on a member, not the class. When used that member is
+used as the id field. It is up to you to ensure that the id's of different objects are unique.
+
 ### Versioning
 
-You can also use versioning with CTRL. For this you use the macro CTRL_MEMBER_V.
+You can also use versioning with CTRL. For this you use the property CTRL_VERSION.
 
 ```cpp
 class SimpleClass
@@ -213,7 +280,8 @@ class SimpleClass
     CTRL_BEGIN_MEMBERS(SimpleClass)
     CTRL_MEMBER(private, int, m_count)
     CTRL_MEMBER(private, std::string, m_name)
-    CTRL_MEMBER_V(private, float, m_factor, 2)
+    CTRL_MEMBER(private, float, m_factor)
+        CTRL_VERSION(2)
     CTRL_END_MEMBERS()
 };
 
@@ -221,8 +289,8 @@ int main(void)
 {
     SimpleClass obj;
     long length = 0;
-    char* data = ctrl::serialize(obj, length, 1);
-    SimpleClass* ptr = ctrl::deserialize<SimpleClass>(data, length, 1);
+    char* data = ctrl::toBinary(obj, length, 1);
+    SimpleClass* ptr = ctrl::fromBinary<SimpleClass>(data, length, 1);
     delete ptr; 
     delete[] data; 
 }

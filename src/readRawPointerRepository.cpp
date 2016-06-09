@@ -1,28 +1,4 @@
 
-#include <ctrl/readRawPointerRepository.h>
-
-using namespace ctrl::Private;
-
-ReadRawPointerRepository::ReadRawPointerRepository() {
-
-}
-
-bool ReadRawPointerRepository::isRegistered(const int& i) const {
-   return m_ptrs.find(i) != m_ptrs.end();
-}
-
-void* ReadRawPointerRepository::get(const int& i) const {
-   return m_ptrs.at(i).first;
-}
-
-void ReadRawPointerRepository::add(const int& i, void* p, const std::string& className) {
-   m_ptrs[i] = std::pair<void*, std::string>(p, className);
-}
-
-std::string ReadRawPointerRepository::getTypeName(const int& i) const {
-   return m_ptrs.at(i).second;
-}
-
 /*
  * Copyright (C) 2016 by Gerrit Daniels <gerrit.daniels@gmail.com>
  * All rights reserved.
@@ -48,3 +24,27 @@ std::string ReadRawPointerRepository::getTypeName(const int& i) const {
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include <ctrl/buffer/readRawPointerRepository.h>
+#include <ctrl/idField.h>
+
+using namespace ctrl::Private;
+
+ReadRawPointerRepository::ReadRawPointerRepository() {
+
+}
+
+bool ReadRawPointerRepository::isRegistered(const IdField& i) const {
+   return m_ptrs.find(i) != m_ptrs.end();
+}
+
+void* ReadRawPointerRepository::get(const IdField& i) const {
+   return m_ptrs.at(i).first;
+}
+
+void ReadRawPointerRepository::add(const IdField& i, void* p, const std::string& className) {
+   m_ptrs[i] = std::pair<void*, std::string>(p, className);
+}
+
+std::string ReadRawPointerRepository::getTypeName(const IdField& i) const {
+   return m_ptrs.at(i).second;
+}

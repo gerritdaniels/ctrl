@@ -1,29 +1,4 @@
 
-#include <ctrl/buffer/abstractReadBuffer.h>
-
-using namespace ctrl::Private;
-
-AbstractReadBuffer::AbstractReadBuffer() {
-
-}
-
-AbstractReadBuffer::~AbstractReadBuffer() {
-
-}
-
-
-ReadPointerRepository< std::shared_ptr, std::weak_ptr >& AbstractReadBuffer::getStdPointerRepository() {
-   return m_stdPointerRepository;
-}
-
-ReadPointerRepository< boost::shared_ptr, boost::weak_ptr >& AbstractReadBuffer::getBoostPointerRepository() {
-   return m_boostPointerRepository;
-}
-
-ReadRawPointerRepository& AbstractReadBuffer::getRawPointerRepository() {
-   return m_rawPointerRepository;
-}
-
 /*
  * Copyright (C) 2016 by Gerrit Daniels <gerrit.daniels@gmail.com>
  * All rights reserved.
@@ -48,3 +23,29 @@ ReadRawPointerRepository& AbstractReadBuffer::getRawPointerRepository() {
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
+#include <ctrl/buffer/abstractReadBuffer.h>
+
+using namespace ctrl;
+using namespace ctrl::Private;
+
+AbstractReadBuffer::AbstractReadBuffer() {
+
+}
+
+AbstractReadBuffer::~AbstractReadBuffer() {
+
+}
+
+
+ReadPointerRepository< std::shared_ptr, std::weak_ptr >& AbstractReadBuffer::getStdPointerRepository() {
+   return m_stdPointerRepository;
+}
+
+ReadPointerRepository< boost::shared_ptr, boost::weak_ptr >& AbstractReadBuffer::getBoostPointerRepository() {
+   return m_boostPointerRepository;
+}
+
+ReadRawPointerRepository& AbstractReadBuffer::getRawPointerRepository() {
+   return m_rawPointerRepository;
+}

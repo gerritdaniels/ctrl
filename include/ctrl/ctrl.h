@@ -24,42 +24,12 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <ctrl/buffer/writePointerRepository.h>
+#ifndef CTRL_H_
+#define CTRL_H_
 
-using namespace ctrl::Private;
+#include <ctrl/reflectionMacros.h>
+#include <ctrl/properties.h>
+#include <ctrl/serialize.h>
+#include <ctrl/deserialize.h>
 
-WritePointerRepository::WritePointerRepository()
-   : m_nextIndex(1) {
-}
-
-bool WritePointerRepository::isRegistered(void* p) const {
-   return m_indices.find(p) != m_indices.end();
-}
-
-int WritePointerRepository::get(void* p) const {
-   return m_indices.at(p);
-}
-
-int WritePointerRepository::add(void* p) {
-   m_indices[p] = m_nextIndex;
-   return m_nextIndex++;
-}
-
-int WritePointerRepository::reserveIndex(void* p) {
-   m_reserved[p] = m_nextIndex;
-   return m_nextIndex++;
-}
-
-bool WritePointerRepository::isReserved(void* p) {
-   return m_reserved.find(p) != m_reserved.end();
-}
-
-int WritePointerRepository::getReservedIndex(void* p) {
-   return m_reserved.at(p);
-}
-
-void WritePointerRepository::clearReserved(void* p) {
-   int index = m_reserved.at(p);
-   m_reserved.erase(p);
-   m_indices[p] = index;
-}
+#endif // CTRL_H_

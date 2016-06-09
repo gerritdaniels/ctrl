@@ -24,42 +24,51 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <ctrl/buffer/writePointerRepository.h>
+#ifndef BUFFERUTIL_H_
+#define BUFFERUTIL_H_
 
-using namespace ctrl::Private;
+#include <string>
+#include <sstream>
+#include <ctrl/context.h>
+#include <ctrl/properties.h>
 
-WritePointerRepository::WritePointerRepository()
-   : m_nextIndex(1) {
-}
+namespace ctrl {
 
-bool WritePointerRepository::isRegistered(void* p) const {
-   return m_indices.find(p) != m_indices.end();
-}
+   class BufferUtil {
+   public:
+      std::string preferedMemberName(const MemberContext& context, const char* suggested = 0) {
+         std::string alteredName  = context.getProperty<WithName>();
+         if (suggested != 0) {
+            return suggested;
+         } else if (alteredName != "") {
+            return alteredName;
+         } else {
+            return context.getName();
+         }
+      }
 
-int WritePointerRepository::get(void* p) const {
-   return m_indices.at(p);
-}
+      template <class T>
+      std::string toString(const T& val) {
+         m_toString.str("");
+         m_toString.clear();
+         m_toString << val;
+         return m_toString.str();
+      }
 
-int WritePointerRepository::add(void* p) {
-   m_indices[p] = m_nextIndex;
-   return m_nextIndex++;
-}
+      template <class T>
+      T fromString(const std::string& str) {
+         m_fromString.str(str);
+         m_fromString.clear();
+         T val;
+         m_fromString >> val;
+         return val;
+      }
 
-int WritePointerRepository::reserveIndex(void* p) {
-   m_reserved[p] = m_nextIndex;
-   return m_nextIndex++;
-}
+   private:
+      std::ostringstream m_toString;
+      std::istringstream m_fromString;
+   };
 
-bool WritePointerRepository::isReserved(void* p) {
-   return m_reserved.find(p) != m_reserved.end();
-}
+} // namespace ctrl
 
-int WritePointerRepository::getReservedIndex(void* p) {
-   return m_reserved.at(p);
-}
-
-void WritePointerRepository::clearReserved(void* p) {
-   int index = m_reserved.at(p);
-   m_reserved.erase(p);
-   m_indices[p] = index;
-}
+#endif // BUFFERUTIL_H_
