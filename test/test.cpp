@@ -988,7 +988,7 @@ public:
    }
 
    bool operator==(const SomeClass& that) const {
-      return m_flag == that.m_flag and m_text == that.m_text and m_float == that.m_float;
+      return m_flag == that.m_flag && m_text == that.m_text && m_float == that.m_float;
    }
 
    CTRL_BEGIN_MEMBERS(SomeClass)
@@ -1003,9 +1003,9 @@ public:
    SomeContainer(SomeClass* ptr) : m_autoPtr(ptr) { }
 
    bool operator==(const SomeContainer& that) const {
-      if (m_autoPtr.get() == 0 and that.m_autoPtr.get() == 0)
+      if (m_autoPtr.get() == 0 && that.m_autoPtr.get() == 0)
          return true;
-      else if (m_autoPtr.get() != 0 and that.m_autoPtr.get() != 0) {
+      else if (m_autoPtr.get() != 0 && that.m_autoPtr.get() != 0) {
          if (*m_autoPtr == *that.m_autoPtr)
             return true;
          else
@@ -1040,9 +1040,9 @@ public:
    UniqueContainer(SomeClass* ptr) : m_uniquePtr(ptr) { }
 
    bool operator==(const UniqueContainer& that) const {
-      if (m_uniquePtr.get() == 0 and that.m_uniquePtr.get() == 0)
+      if (m_uniquePtr.get() == 0 && that.m_uniquePtr.get() == 0)
          return true;
-      else if (m_uniquePtr.get() != 0 and that.m_uniquePtr.get() != 0) {
+      else if (m_uniquePtr.get() != 0 && that.m_uniquePtr.get() != 0) {
          if (*m_uniquePtr == *that.m_uniquePtr)
             return true;
          else
@@ -1127,13 +1127,13 @@ public:
    }
 
    bool operator==(const RawContainer& that) const {
-      if (m_ptr0 == 0 and that.m_ptr0 == 0)
+      if (m_ptr0 == 0 && that.m_ptr0 == 0)
          return true;
       if (m_ptr0 == 0)
          return false;
       if (that.m_ptr0 == 0)
          return false;
-      return *m_ptr0 == *(that.m_ptr0) and *m_ptr1 == *(that.m_ptr1);
+      return *m_ptr0 == *(that.m_ptr0) && *m_ptr1 == *(that.m_ptr1);
    }
 
    CTRL_BEGIN_MEMBERS(RawContainer)
@@ -1353,7 +1353,7 @@ public:
    virtual ~FooImplementer() {}
 
    bool operator==(const FooImplementer& that) const {
-      return PureVirtual::operator==(that) and m_text == that.m_text;
+      return PureVirtual::operator==(that) && m_text == that.m_text;
    }
 
    virtual void foo() { }

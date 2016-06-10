@@ -162,23 +162,23 @@ public:
    }
 
    bool isFundamental() const {
-      m_pimpl->isFundamental();
+      return m_pimpl->isFundamental();
    }
 
    bool isCollection() const {
-      m_pimpl->isCollection();
+	   return m_pimpl->isCollection();
    }
 
    bool isMap() const {
-      m_pimpl->isMap();
+	   return m_pimpl->isMap();
    }
 
    bool isMapKeyFundamental() const {
-      m_pimpl->isMapKeyFundamental();
+	   return m_pimpl->isMapKeyFundamental();
    }
 
    bool isPointer() const {
-      m_pimpl->isPointer();
+	   return m_pimpl->isPointer();
    }
 
 private:

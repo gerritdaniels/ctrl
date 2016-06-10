@@ -45,7 +45,7 @@ namespace Private {
       ReadPointerRepository() { }
 
       bool isRegistered(const IdField& idField) const {
-          m_ptrs.find(idField) != m_ptrs.end();
+          return m_ptrs.find(idField) != m_ptrs.end();
       }
 
       Shared_<void> get(const IdField& idField) const {

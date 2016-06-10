@@ -86,7 +86,7 @@ namespace Private {
 
    template <size_t size_>
    void serialize(const std::bitset<size_>& elements, AbstractWriteBuffer& buffer, int version, const Context& context) {
-      size_t nbChars = size_ / 8 + (size_ % 8 == 0 ? 0 : 1);
+      const size_t nbChars = size_ / 8 + (size_ % 8 == 0 ? 0 : 1);
       char bits[nbChars];
       for (size_t i = 0; i < nbChars; ++i)
          bits[i] = 0;

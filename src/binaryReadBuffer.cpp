@@ -28,6 +28,7 @@
 #include <ctrl/exception.h>
 #include <ctrl/context.h>
 
+using namespace ctrl;
 using namespace ctrl::Private;
 
 BinaryReadBuffer::Impl::Impl() { }
@@ -35,7 +36,7 @@ BinaryReadBuffer::Impl::Impl() { }
 BinaryReadBuffer::Impl::~Impl() { }
 
 BinaryReadBuffer::BinaryReadBuffer(BinaryReadBuffer::Impl* pimpl)
-   : m_pimpl(pimpl) {
+   : m_pimpl(pimpl), m_skipNextFundamental(false) {
 
 }
 

@@ -93,6 +93,9 @@ namespace Private {
       }
    };
 
+   template<class ConcreteClass_>
+   int IdFieldGetter<ConcreteClass_, -1>::dummy = 0;
+
    template <class ConcreteClass_>
    class IdFieldImpl : public IdField::Impl {
    private:

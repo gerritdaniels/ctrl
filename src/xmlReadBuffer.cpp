@@ -31,7 +31,8 @@ using namespace rapidxml;
 using namespace ctrl;
 using namespace ctrl::Private;
 
-XmlReadBuffer::XmlReadBuffer(const std::string& data) : m_collectionStart(false), m_nextValueIsAttribute(false) {
+XmlReadBuffer::XmlReadBuffer(const std::string& data) : m_collectionStart(false),
+		m_nextValueIsAttribute(false), m_skipNextFundamental(false) {
    m_document.parse<0>(const_cast<char*>(data.c_str()));
    xml_node<>* node = m_document.first_node("root");
    checkNonNull(node, "root");

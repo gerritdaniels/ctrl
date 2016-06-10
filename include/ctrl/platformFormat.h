@@ -27,16 +27,16 @@
 #ifndef MEMORY_FORMAT_H_
 #define MEMORY_FORMAT_H_
 
-#include <endian.h>
+#include <boost/endian/conversion.hpp>
 
-#define CTRL_BIG_ENDIAN __BIG_ENDIAN
-#define CTRL_LITTLE_ENDIAN __LITTLE_ENDIAN
+#define CTRL_BIG_ENDIAN 4321
+#define CTRL_LITTLE_ENDIAN 1234
 
-#if __BYTE_ORDER == __BIG_ENDIAN
+#ifdef BOOST_BIG_ENDIAN
 #   define CTRL_BYTE_ORDER CTRL_BIG_ENDIAN
 #endif
 
-#if __BYTE_ORDER == __LITTLE_ENDIAN
+#ifdef BOOST_LITTLE_ENDIAN
 #   define CTRL_BYTE_ORDER CTRL_LITTLE_ENDIAN
 #endif
 

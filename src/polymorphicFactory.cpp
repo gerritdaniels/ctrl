@@ -27,6 +27,7 @@
 #include <ctrl/polymorphicFactory.h>
 #include <ctrl/buffer/abstractReadBuffer.h>
 
+using namespace ctrl;
 using namespace ctrl::Private;
 
 PolymorphicFactory::Impl::Impl() { }
@@ -46,5 +47,5 @@ PolymorphicFactory& PolymorphicFactory::operator=(const PolymorphicFactory& that
 
 void* PolymorphicFactory::deserialize(AbstractReadBuffer& buffer, const IdField& idField, const std::string& className,
                                       int version, const Context& context) const {
-   m_pimpl->deserialize(buffer, idField, className, version, context);
+   return m_pimpl->deserialize(buffer, idField, className, version, context);
 }

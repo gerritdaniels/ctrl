@@ -100,7 +100,7 @@ namespace Private {
    template <size_t size_>
    void deserialize(std::bitset<size_>& elements, AbstractReadBuffer& buffer, int version, const Context& context) throw(Exception) {
       size_t nbChars = size_ / 8 + (size_ % 8 == 0 ? 0 : 1);
-      char bits[nbChars];
+      char* bits = new char[nbChars];
       buffer.readBits(bits, size_, context);
 
       unsigned char mask = 0x80;
@@ -112,6 +112,7 @@ namespace Private {
          else
             mask = mask >> 1;
       }
+	  delete[] bits;
    }
 
    template <class Element_, class Alloc_>

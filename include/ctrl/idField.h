@@ -81,7 +81,7 @@ public:
    }
 
    bool operator==(const IdField& that) const {
-      m_pimpl->operator==(*that.m_pimpl);
+      return m_pimpl->operator==(*that.m_pimpl);
    }
 
    bool isNull() const {

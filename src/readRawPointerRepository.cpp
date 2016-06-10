@@ -27,6 +27,7 @@
 #include <ctrl/buffer/readRawPointerRepository.h>
 #include <ctrl/idField.h>
 
+using namespace ctrl;
 using namespace ctrl::Private;
 
 ReadRawPointerRepository::ReadRawPointerRepository() {
