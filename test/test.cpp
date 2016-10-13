@@ -753,7 +753,7 @@ public:
       return m_map == that.m_map;
    }
 
-   typedef std::multimap<std::string, SimpleClass> MapType;
+   typedef std::unordered_multimap<std::string, SimpleClass> MapType;
    CTRL_BEGIN_MEMBERS(SimpleUnorderedMultimap)
    CTRL_MEMBER(private, MapType, m_map)
    CTRL_END_MEMBERS()

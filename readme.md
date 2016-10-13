@@ -1,7 +1,7 @@
 # C++ Template Reflection Library
 
 CTRL adds data member reflection to C++ using template meta-programming techniques and the standard C++ preprocessor.
-This reflection is used to implement serialize and deserialize functions. Both binary and XML formats are supported.
+This reflection is used to implement serialize and deserialize functions. Binary, XML and JSON formats are supported.
 Since it uses the standard preprocessor no special preprocessor is needed to use CTRL.
 
 ## Requirements
@@ -62,6 +62,10 @@ int main(void)
     std::string str = ctrl::toXml(obj);
     ptr = ctrl::fromXml<SimpleClass>(str);
     delete ptr;
+
+    std::string str = ctrl::toJson(obj);
+    ptr = ctrl::fromJson<SimpleClass>(str);
+    delete ptr;
 }
 ```
 
@@ -73,6 +77,9 @@ data that is consumed by fromBinary doesn't match the length that is passed in, 
 The toXml function takes a const reference to the object and opionally a boolean indicating that pretty printing should
 be used. The fromXml function takes a const string reference as argument and again returns an on heap allocated
 object.
+
+The toJson alkso has the object as its first argument and can optionally have a second integer parameter indicating the
+indentation level of the output. When set to 0 (the default) pretty printing isn't used.
 
 You can also use composition.
 
@@ -100,7 +107,9 @@ class PointerClass
 };
 ```
 
-All standard containers are supported.
+All standard containers are supported. Note that when serializing to JSON multimaps and unordered_multimaps can't contain
+duplicate keys. This is because all map types are serialized as JSON objects.
+
 
 ```cpp
 class ContainerClass
@@ -175,14 +184,14 @@ CTRL_POLYMORPH_MULTIPLE_2(MultipleClass, CompositeClass, PointerClass)
 
 ### Initialization
 
-If you need to do some initialization after an object is deserialized, you can do this by adding a static __initialize
+If you need to do some initialization after an object is deserialized, you can do this by adding a static initialize
 member function to the class.
 
 ```cpp
 class InitializeClass
 {
 public:
-    static void __initialize(InitializeClass& obj, int version)
+    static void initialize(InitializeClass& obj, int version)
     {
         obj.m_sum = obj.m_val0 + obj.m_val1;
     }
@@ -273,7 +282,9 @@ used as the id field. It is up to you to ensure that the id's of different objec
 
 ### Versioning
 
-You can also use versioning with CTRL. For this you use the property CTRL_VERSION.
+You can also use versioning with CTRL. For this you use the property CTRL_VERSION. This is not supported when serializing
+to JSON because the root of the document can also be an array or fundamental type, in which case the version number can't
+be added to the output.
 
 ```cpp
 class SimpleClass
