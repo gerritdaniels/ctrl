@@ -2,6 +2,7 @@
 
 CTRL adds data member reflection to C++ using template meta-programming techniques and the standard C++ preprocessor.
 This reflection is used to implement serialize and deserialize functions. Binary, XML and JSON formats are supported.
+There is also an implementation of an annotation like system to control the XML and JSON output.
 Since it uses the standard preprocessor no special preprocessor is needed to use CTRL.
 
 ## Requirements
@@ -78,7 +79,7 @@ The toXml function takes a const reference to the object and opionally a boolean
 be used. The fromXml function takes a const string reference as argument and again returns an on heap allocated
 object.
 
-The toJson alkso has the object as its first argument and can optionally have a second integer parameter indicating the
+The toJson also has the object as its first argument and can optionally have a second integer parameter indicating the
 indentation level of the output. When set to 0 (the default) pretty printing isn't used.
 
 You can also use composition.
@@ -150,7 +151,7 @@ If you want to use a derived class in a polymorphic way, eg. store pointers to t
 macros CTRL_POLYMORPH (for publicly constructable classes) and CTRL_ABSTRACT_POLYMOPRH (for abstract and non publicly
 constructable classes). These have to be put in the *.cpp file.
 
-```cp
+```cpp
 CTRL_POLYMORPH(CompositeClass)
 
 CTRL_POLYMORPH(DerivedClass)
@@ -241,9 +242,6 @@ class CustomNames
         CTRL_WITH_NAME("val")
     CTRL_MEMBER(private, std::string, m_text)
     CTRL_END_MEMBERS()
-
-private:
-    int m_sum;
 };
 ```
 
@@ -267,18 +265,40 @@ the case of polymorphic classes.
 
 This macro is also an inheritance root property. It serializes the type id field as attribute instead of as element.
 
-#### CTRL_TYPE_ID_FIELD_NAME(_name_)
+#### CTRL_ID_FIELD_NAME(_name_)
 
 This macro is also an inheritance root property. Sets the name used for the id field of pointer types.
 
-#### CTRL_TYPE_ID_FIELD_AS_ATTRIBUTE()
+#### CTRL_ID_FIELD_AS_ATTRIBUTE()
 
 This macro is also an inheritance root property. It serializes the id field as attribute instead of as element.
 
 #### CTRL_AS_ID_FIELD()
 
-This macro is an inheritance root property, but it has to be set on a member, not the class. When used that member is
+This macro is an inheritance root property, but it has to be set on a member, not the class. When used, that member is
 used as the id field. It is up to you to ensure that the id's of different objects are unique.
+
+
+### JSON serialization features
+
+Some of the XML serialization properties are also applicable to JSON serialization.
+
+#### CTRL_WITH_NAME(_name_)
+
+The with name macro on a member controls the name used for the json object property. On a class it controls the type id used
+when the class is polymorph.
+
+#### CTRL_TYPE_ID_FIELD_NAME(_name_)
+
+This again controls the name of the type id property used for polymorphic types.
+
+#### CTRL_ID_FIELD_NAME(_name_)
+
+Sets the name used for the id field of pointer types.
+
+#### CTRL_AS_ID_FIELD()
+
+When used, the target member is used as the id field. It is up to you to ensure that the id's of different objects are unique.
 
 ### Versioning
 
