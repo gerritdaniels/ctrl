@@ -50,31 +50,31 @@ namespace Private {
    class MemberContextImpl : public AbstractMemberContextImpl {
    public:
       virtual void* getProperty(const std::type_info& type) const {
-         return getProperty(typename ConcreteClass_::__KnownProperties(), type);
+         return getProperty(typename ConcreteClass_::CTRL_KnownProperties(), type);
       }
 
       virtual std::string getName() const {
-         return ConcreteClass_::__getMemberName(Int2Type<index_>());
+         return ConcreteClass_::CTRL_getMemberName(Int2Type<index_>());
       }
 
       virtual bool isFundamental() const {
-         return IsFundamental<typename ConcreteClass_::template __MemberType<index_>::Type>::value;
+         return IsFundamental<typename ConcreteClass_::template CTRL_MemberType<index_>::Type>::value;
       }
 
       virtual bool isCollection() const {
-         return IsCollection<typename ConcreteClass_::template __MemberType<index_>::Type>::value;
+         return IsCollection<typename ConcreteClass_::template CTRL_MemberType<index_>::Type>::value;
       }
 
       virtual bool isMap() const {
-         return IsMap<typename ConcreteClass_::template __MemberType<index_>::Type>::value;
+         return IsMap<typename ConcreteClass_::template CTRL_MemberType<index_>::Type>::value;
       }
 
       virtual bool isMapKeyFundamental() const {
-         return IsMap<typename ConcreteClass_::template __MemberType<index_>::Type>::keyFundamental;
+         return IsMap<typename ConcreteClass_::template CTRL_MemberType<index_>::Type>::keyFundamental;
       }
 
       virtual bool isPointer() const {
-         return IsPointer<typename ConcreteClass_::template __MemberType<index_>::Type>::value;
+         return IsPointer<typename ConcreteClass_::template CTRL_MemberType<index_>::Type>::value;
       }
 
    private:
@@ -83,7 +83,7 @@ namespace Private {
          typedef typename TList_::Head PropertyId;
          void* voidPtr = 0;
          if (typeid(PropertyId) == type) {
-            voidPtr = ConcreteClass_::__getProperty(PropertyId(), Int2Type<index_>());
+            voidPtr = ConcreteClass_::CTRL_getProperty(PropertyId(), Int2Type<index_>());
          }
          if (voidPtr == 0) {
             return getProperty(typename TList_::Tail(), type);

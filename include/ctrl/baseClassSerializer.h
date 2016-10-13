@@ -40,11 +40,11 @@ namespace Private {
    struct BaseClassSerializer {
       template <class TList_>
       static void serialize(const ConcreteClass_& object, TList_, AbstractWriteBuffer& buffer, int version, const Context& context) {
-         typedef typename TList_::Head::__BaseClasses BaseClasses;
+         typedef typename TList_::Head::CTRL_BaseClasses BaseClasses;
          BaseClassSerializer<typename TList_::Head>::serialize(dynamic_cast<const typename TList_::Head&>(object),
                                                                BaseClasses(), buffer, version, context);
 
-         typedef typename TList_::Head::__MemberIndices Indices;
+         typedef typename TList_::Head::CTRL_MemberIndices Indices;
          ClassSerializer<typename TList_::Head>::serialize(dynamic_cast<const typename TList_::Head&>(object),
                                                            Indices(), buffer, version, context);
          serialize(object, typename TList_::Tail(), buffer, version, context);
@@ -56,15 +56,15 @@ namespace Private {
 
       template <class TList_>
       static void deserialize(ConcreteClass_& object, TList_, AbstractReadBuffer& buffer, int version, const Context& context) throw(Exception) {
-         typedef typename TList_::Head::__BaseClasses TList;
+         typedef typename TList_::Head::CTRL_BaseClasses TList;
          BaseClassSerializer<typename TList_::Head>::deserialize(dynamic_cast<typename TList_::Head&>(object),
                                                                  TList(), buffer, version, context);
 
-         typedef typename TList_::Head::__MemberIndices Indices;
+         typedef typename TList_::Head::CTRL_MemberIndices Indices;
          ClassSerializer<typename TList_::Head>::deserialize(dynamic_cast<typename TList_::Head&>(object),
                                                              Indices(), buffer, version, context);
 
-         TList_::Head::__initialize(dynamic_cast<typename TList_::Head&>(object), version);
+         TList_::Head::initialize(dynamic_cast<typename TList_::Head&>(object), version);
          deserialize(object, typename TList_::Tail(), buffer, version, context);
       }
 

@@ -8,6 +8,7 @@ add_library(ctrl SHARED
                 src/abstractWriteBuffer.cpp
                 src/binaryWriteBuffer.cpp
                 src/xmlWriteBuffer.cpp
+                src/jsonWriteBuffer.cpp
                 src/writePointerRepository.cpp
                 src/abstractReadBuffer.cpp
                 src/binaryReadBuffer.cpp

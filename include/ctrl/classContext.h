@@ -102,7 +102,7 @@ namespace Private {
 
    public:
       virtual void* getProperty(const std::type_info& type) const {
-         return getProperty(typename ConcreteClass_::__KnownProperties(), type);
+         return getProperty(typename ConcreteClass_::CTRL_KnownProperties(), type);
       }
 
       virtual bool hasSingleRoot() const {
@@ -111,7 +111,7 @@ namespace Private {
 
       virtual void* getRootProperty(const std::type_info& type) const {
          if (!hasSingleRoot()) {
-            throw Exception("Single root property requested for multiply inherited class: " + ConcreteClass_::__staticName());
+            throw Exception("Single root property requested for multiply inherited class: " + ConcreteClass_::CTRL_staticName());
          }
          typedef DerivationRoots<ConcreteClass_> DerivationRoots;
          typename ClassContextSelector<typename DerivationRoots::Roots, DerivationRoots::isSingleRoot>::Context rootContext;
@@ -127,7 +127,7 @@ namespace Private {
       }
 
       virtual std::string getName() const {
-         return ConcreteClass_::__staticName();
+         return ConcreteClass_::CTRL_staticName();
       }
 
       virtual IdField getRootIdField() const {
@@ -140,7 +140,7 @@ namespace Private {
          typedef typename TList_::Head PropertyId;
          void* voidPtr = 0;
          if (typeid(PropertyId) == type) {
-            voidPtr = ConcreteClass_::__getProperty(PropertyId(), Int2Type<-1>());
+            voidPtr = ConcreteClass_::CTRL_getProperty(PropertyId(), Int2Type<-1>());
          }
          if (voidPtr == 0) {
             return getProperty(typename TList_::Tail(), type);

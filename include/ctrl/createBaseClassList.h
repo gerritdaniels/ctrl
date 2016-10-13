@@ -35,7 +35,7 @@ namespace Private {
 
    template <class TList_, int startLine_, int endLine_, class ConcreteClass_>
    struct CreateBaseClassListImpl {
-      typedef typename ConcreteClass_::template __IsBaseClassPresent<endLine_>
+      typedef typename ConcreteClass_::template CTRL_IsBaseClassPresent<endLine_>
                      IsBaseClassPresent;
       enum { isBaseClassPresent = IsBaseClassPresent::value };
 

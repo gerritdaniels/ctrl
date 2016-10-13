@@ -33,7 +33,7 @@ namespace Private {
 
    template <class ConcreteClass_, int startLine_, int currentLine_>
    struct GetMemberIndex {
-      typedef typename ConcreteClass_::template __IsMemberPresent<currentLine_> IsMemberPresent;
+      typedef typename ConcreteClass_::template CTRL_IsMemberPresent<currentLine_> IsMemberPresent;
 
       enum { index = SelectInt< IsMemberPresent::value
                               , IsMemberPresent::index

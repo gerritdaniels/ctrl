@@ -35,7 +35,7 @@ namespace Private {
 
    template <class TList_, int startLine_, int endLine_, class ConcreteClass_>
    struct CreatePropertyListImpl {
-      typedef typename ConcreteClass_::template __IsPropertyPresent<endLine_>
+      typedef typename ConcreteClass_::template CTRL_IsPropertyPresent<endLine_>
                      IsPropertyPresent;
       enum { isPropertyPresent = IsPropertyPresent::value };
 

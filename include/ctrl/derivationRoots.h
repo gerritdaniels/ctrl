@@ -50,7 +50,7 @@ namespace Private {
 
    template <class Head_, class Tail_>
    struct GatherBaseClasses<TypeList<Head_, Tail_>> {
-      typedef typename Head_::__BaseClasses LevelUp;
+      typedef typename Head_::CTRL_BaseClasses LevelUp;
 
       typedef typename Select<IsNullType<LevelUp>::value, Head_, LevelUp>::Result NewHead;
 

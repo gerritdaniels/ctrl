@@ -39,19 +39,19 @@ struct PropertyId_ {                                                            
 #define CTRL_PROPERTY(PropertyId_, value_)                                                                             \
 public:                                                                                                                \
    template <class Dummy_>                                                                                             \
-   struct __IsPropertyPresent<__LINE__, Dummy_> {                                                                      \
+   struct CTRL_IsPropertyPresent<__LINE__, Dummy_> {                                                                      \
       enum { value = true };                                                                                           \
       typedef PropertyId_ PropertyId;                                                                                  \
    };                                                                                                                  \
-   static void* __getProperty(PropertyId_,                                                                             \
+   static void* CTRL_getProperty(PropertyId_,                                                                             \
          ctrl::Private::Int2Type<ctrl::Private::GetMemberIndex                                                         \
-                  <__ConcreteClass, __startLine, __LINE__>::index>) {                                                  \
+                  <CTRL_ConcreteClass, CTRL_startLine, __LINE__>::index>) {                                                  \
       return reinterpret_cast<void*>(new PropertyId_::ValueType(value_));                                              \
    }                                                                                                                   \
                                                                                                                        \
    template <class Dummy_>                                                                                             \
-   struct __HasProperty<PropertyId_, ctrl::Private::GetMemberIndex                                                     \
-                  <__ConcreteClass, __startLine, __LINE__>::index, Dummy_> {                                           \
+   struct CTRL_HasProperty<PropertyId_, ctrl::Private::GetMemberIndex                                                     \
+                  <CTRL_ConcreteClass, CTRL_startLine, __LINE__>::index, Dummy_> {                                           \
       enum { value = true };                                                                                           \
    };
 

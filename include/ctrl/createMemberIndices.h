@@ -35,7 +35,7 @@ namespace Private {
 
    template <class TList_, int startLine_, int endLine_, class ConcreteClass_>
    struct CreateMemberIndicesImpl {
-      typedef typename ConcreteClass_::template __IsMemberPresent<endLine_> IsMemberPresent;
+      typedef typename ConcreteClass_::template CTRL_IsMemberPresent<endLine_> IsMemberPresent;
       enum { isMemberPresent = IsMemberPresent::value };
 
       typedef typename Select< isMemberPresent

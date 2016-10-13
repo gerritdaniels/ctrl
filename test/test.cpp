@@ -49,9 +49,9 @@ void writeBytes(const char* bytes, const long& length) {
 template <class T>
 bool testAndDelete(T* newObj, const T& obj, char* bytes) {
    bool success = false;
-   if (*newObj == obj)
+   if (*newObj == obj) {
       success = true;
-
+   }
    delete newObj;
    if (bytes != 0) {
       delete[] bytes;
@@ -60,7 +60,7 @@ bool testAndDelete(T* newObj, const T& obj, char* bytes) {
 }
 
 template <class T>
-bool testSerialization(const T& obj) {
+bool testSerialization(const T& obj, bool multimapJsonException = false) {
    long length;
    char* bytes = ctrl::toBinary(obj, length);
    writeBytes(bytes, length);
@@ -75,6 +75,23 @@ bool testSerialization(const T& obj) {
    if (!testAndDelete(newObj, obj, 0)) {
       return false;
    }
+
+   bool desiredExceptionCaught = false;
+   try {
+      std::string json = ctrl::toJson(obj, 4);
+      std::cout << json << std::endl;
+   } catch (ctrl::Exception ex) {
+      if (!multimapJsonException || std::string(ex.what()) != "Multimaps with duplicated keys aren't supported when serializing to JSON") {
+         throw ex;
+      } else {
+         desiredExceptionCaught = true;
+      }
+   }
+   if (multimapJsonException && !desiredExceptionCaught) {
+      std::cout << "Multimaps silently ignored" << std::endl;
+      return false;
+   }
+
    return true;
 }
 
@@ -430,7 +447,7 @@ bool testMultimap() {
    obj.add("K", SimpleClass(2, "Kermit"));
    obj.add("G", SimpleClass(8, "Geert"));
 
-   return testSerialization(obj);
+   return testSerialization(obj, true);
 }
 
 //******************************************************************************
@@ -751,7 +768,7 @@ bool testUnorderedMultimap() {
    obj.add("K", SimpleClass(2, "Kermit"));
    obj.add("G", SimpleClass(8, "Geert"));
 
-   return testSerialization(obj);
+   return testSerialization(obj, true);
 }
 
 //******************************************************************************
@@ -1520,7 +1537,7 @@ public:
       m_sum = val0 + val1;
    }
 
-   static void __initialize(InitializeBase& obj, int version) {
+   static void initialize(InitializeBase& obj, int version) {
       obj.m_sum = obj.m_val0 + obj.m_val1;
    }
 
@@ -1545,7 +1562,7 @@ public:
       m_product = val0 * val1 * val2;
    }
 
-   static void __initialize(InitializeClass& obj, int version) {
+   static void initialize(InitializeClass& obj, int version) {
       obj.m_product = obj.m_val0 * obj.m_val1 * obj.m_val2;
    }
 
@@ -1656,7 +1673,7 @@ public:
    int getV1() const { return m_v1; }
    int getV2() const { return m_v2; }
 
-   static void __initialize(WithVersionedClass& obj, int version) {
+   static void initialize(WithVersionedClass& obj, int version) {
       if (version < 2) obj.m_v2 = 0;
    }
 

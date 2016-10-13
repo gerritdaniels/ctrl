@@ -38,7 +38,7 @@ namespace Private {
 
    template <class ConcreteClass_, class Indices_, int index_>
    struct RootHasIdFieldImpl {
-      typedef typename ConcreteClass_::template __HasProperty<AsIdField, Indices_::Head::value> HasProperty;
+      typedef typename ConcreteClass_::template CTRL_HasProperty<AsIdField, Indices_::Head::value> HasProperty;
 
       enum { definesProperty = HasProperty::value };
       enum { tmpIndex = SelectInt<definesProperty, Indices_::Head::value, index_>::value };
@@ -59,7 +59,7 @@ namespace Private {
 
    template <class ConcreteClass_>
    struct RootHasIdField {
-      typedef RootHasIdFieldImpl<ConcreteClass_, typename ConcreteClass_::__MemberIndices, -1> Impl;
+      typedef RootHasIdFieldImpl<ConcreteClass_, typename ConcreteClass_::CTRL_MemberIndices, -1> Impl;
 
       enum { error = Impl::nbDefined > 1 };
       enum { index = Impl::index };
@@ -75,10 +75,10 @@ namespace Private {
 
    template <class ConcreteClass_, int index_>
    struct IdFieldGetter {
-      typedef typename ConcreteClass_::template __MemberType<index_>::Type Type;
+      typedef typename ConcreteClass_::template CTRL_MemberType<index_>::Type Type;
 
       static Type& get(ConcreteClass_* ptr) {
-         return ptr->* ConcreteClass_::__getMemberPtr(Int2Type<index_>());
+         return ptr->* ConcreteClass_::CTRL_getMemberPtr(Int2Type<index_>());
       }
    };
 
@@ -131,7 +131,7 @@ namespace Private {
 
       virtual void write(void* p, const std::string& dynamicName, AbstractWriteBuffer& buffer, const Context& context) {
          if (Info::present) {
-            p = PolymorphicSerializer::instance().cast(dynamicName, ConcreteClass_::__staticName(), p);
+            p = PolymorphicSerializer::instance().cast(dynamicName, ConcreteClass_::CTRL_staticName(), p);
             ConcreteClass_* ptr = reinterpret_cast<ConcreteClass_*>(p);
             m_value = Getter::get(ptr);
          }
@@ -145,7 +145,7 @@ namespace Private {
             bool present = Info::present;
             int index = Info::index;
             bool fundamental = IsFundamental<typename Getter::Type>::value;
-            throw Exception("Error processing id field of class: " + ConcreteClass_::__staticName());
+            throw Exception("Error processing id field of class: " + ConcreteClass_::CTRL_staticName());
          }
       }
 
@@ -158,13 +158,13 @@ namespace Private {
             }
             buffer.leaveIdField(context);
          } else {
-            throw Exception("Error processing id field of class: " + ConcreteClass_::__staticName());
+            throw Exception("Error processing id field of class: " + ConcreteClass_::CTRL_staticName());
          }
       }
 
       virtual void assign(void* p, const std::string& dynamicName) {
          if (Info::present) {
-            p = PolymorphicSerializer::instance().cast(dynamicName, ConcreteClass_::__staticName(), p);
+            p = PolymorphicSerializer::instance().cast(dynamicName, ConcreteClass_::CTRL_staticName(), p);
             ConcreteClass_* ptr = reinterpret_cast<ConcreteClass_*>(p);
             Getter::get(ptr) = m_value;
          }

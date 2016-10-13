@@ -48,7 +48,7 @@ namespace Private {
          Context memberContext(context, MemberContext(new MemberContextImpl<ConcreteClass_, Indices_::Head::value>()));
          if (version >= memberContext.getOwningMember().getProperty<WithVersion>()) {
             buffer.enterMember(memberContext);
-            ctrl::Private::serialize( object.* ConcreteClass_::__getMemberPtr(typename Indices_::Head()),
+            ctrl::Private::serialize( object.* ConcreteClass_::CTRL_getMemberPtr(typename Indices_::Head()),
                                       buffer, version, memberContext );
             buffer.leaveMember(memberContext);
          }
@@ -64,7 +64,7 @@ namespace Private {
          Context memberContext(context, MemberContext(new MemberContextImpl<ConcreteClass_, Indices_::Head::value>()));
          if (version >= memberContext.getOwningMember().getProperty<WithVersion>()) {
             buffer.enterMember(memberContext);
-            ctrl::Private::deserialize( object.* ConcreteClass_::__getMemberPtr(typename Indices_::Head()),
+            ctrl::Private::deserialize( object.* ConcreteClass_::CTRL_getMemberPtr(typename Indices_::Head()),
                                         buffer, version, memberContext );
             buffer.leaveMember(memberContext);
          }

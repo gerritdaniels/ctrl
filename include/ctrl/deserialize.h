@@ -88,13 +88,13 @@ namespace Private {
    template <class ConcreteClass_>
    void deserialize(ConcreteClass_& value, AbstractReadBuffer& buffer, int version, const Context& context) throw(Exception) {
       buffer.enterObject(context);
-      typedef typename ConcreteClass_::__BaseClasses TList;
+      typedef typename ConcreteClass_::CTRL_BaseClasses TList;
       BaseClassSerializer<ConcreteClass_>::deserialize(value, TList(), buffer, version, context);
 
-      typedef typename ConcreteClass_::__MemberIndices Indices;
+      typedef typename ConcreteClass_::CTRL_MemberIndices Indices;
       ClassSerializer<ConcreteClass_>::deserialize(value, Indices(), buffer, version, context);
       buffer.enterObject(context);
-      ConcreteClass_::__initialize(value, version);
+      ConcreteClass_::initialize(value, version);
    }
 
    template <size_t size_>
@@ -373,7 +373,7 @@ namespace Private {
 
    template <class Element_>
    void deserialize(boost::shared_ptr<Element_>& ptr, AbstractReadBuffer& buffer, int version, const Context& context) throw(Exception) {
-      Context staticContext(context, Element_::__staticContext());
+      Context staticContext(context, Element_::CTRL_staticContext());
       IdField idField = staticContext.getClassContext().getRootIdField();
       idField.read(buffer, staticContext);
       if (idField.isNull()) {
@@ -381,7 +381,7 @@ namespace Private {
       }
 
       boost::shared_ptr<void> voidPtr;
-      std::string staticName(Element_::__staticName());
+      std::string staticName(Element_::CTRL_staticName());
 
       if (buffer.getBoostPointerRepository().isRegistered(idField)) {
          voidPtr = buffer.getBoostPointerRepository().get(idField);
@@ -413,7 +413,7 @@ namespace Private {
 
    template <class Element_>
    void deserialize(boost::weak_ptr<Element_>& ptr, AbstractReadBuffer& buffer, int version, const Context& context) throw(Exception) {
-      Context staticContext(context, Element_::__staticContext());
+      Context staticContext(context, Element_::CTRL_staticContext());
       IdField idField = staticContext.getClassContext().getRootIdField();
       idField.read(buffer, staticContext);
       if (idField.isNull()) {
@@ -425,7 +425,7 @@ namespace Private {
          void* p = voidPtr.get();
 
          std::string className(buffer.getBoostPointerRepository().getTypeName(idField));
-         std::string staticClassName(Element_::__staticName());
+         std::string staticClassName(Element_::CTRL_staticName());
          if (PolymorphicSerializer::instance().hasCast(className, staticClassName))
             p = PolymorphicSerializer::instance().getCast(className, staticClassName)(p);
 
@@ -437,7 +437,7 @@ namespace Private {
 
    template <class Element_>
    void deserialize(std::shared_ptr<Element_>& ptr, AbstractReadBuffer& buffer, int version, const Context& context) throw(Exception) {
-      Context staticContext(context, Element_::__staticContext());
+      Context staticContext(context, Element_::CTRL_staticContext());
       IdField idField = staticContext.getClassContext().getRootIdField();
       idField.read(buffer, staticContext);
       if (idField.isNull()) {
@@ -445,7 +445,7 @@ namespace Private {
       }
 
       std::shared_ptr<void> voidPtr;
-      std::string staticName(Element_::__staticName());
+      std::string staticName(Element_::CTRL_staticName());
 
       if (buffer.getStdPointerRepository().isRegistered(idField)) {
          voidPtr = buffer.getStdPointerRepository().get(idField);
@@ -477,7 +477,7 @@ namespace Private {
 
    template <class Element_>
    void deserialize(std::weak_ptr<Element_>& ptr, AbstractReadBuffer& buffer, int version, const Context& context) throw(Exception) {
-      Context staticContext(context, Element_::__staticContext());
+      Context staticContext(context, Element_::CTRL_staticContext());
       IdField idField = staticContext.getClassContext().getRootIdField();
       idField.read(buffer, staticContext);
       if (idField.isNull()) {
@@ -489,7 +489,7 @@ namespace Private {
          void* p = voidPtr.get();
 
          std::string className(buffer.getStdPointerRepository().getTypeName(idField));
-         std::string staticClassName(Element_::__staticName());
+         std::string staticClassName(Element_::CTRL_staticName());
          if (PolymorphicSerializer::instance().hasCast(className, staticClassName))
             p = PolymorphicSerializer::instance().getCast(className, staticClassName)(p);
 
@@ -501,14 +501,14 @@ namespace Private {
 
    template <class Element_>
    void deserialize(std::auto_ptr<Element_>& ptr, AbstractReadBuffer& buffer, int version, const Context& context) throw(Exception) {
-      Context staticContext(context, Element_::__staticContext());
+      Context staticContext(context, Element_::CTRL_staticContext());
       IdField idField = staticContext.getClassContext().getRootIdField();
       idField.read(buffer, staticContext);
       if (idField.isNull()) {
          return;
       }
 
-      std::string staticName(Element_::__staticName());
+      std::string staticName(Element_::CTRL_staticName());
       if (PolymorphicSerializer::instance().isPolymorph(staticName)) {
          std::string className;
          buffer.readTypeId(className, staticContext);
@@ -526,14 +526,14 @@ namespace Private {
 
    template <class Element_>
    void deserialize(std::unique_ptr<Element_>& ptr, AbstractReadBuffer& buffer, int version, const Context& context) throw(Exception) {
-      Context staticContext(context, Element_::__staticContext());
+      Context staticContext(context, Element_::CTRL_staticContext());
       IdField idField = staticContext.getClassContext().getRootIdField();
       idField.read(buffer, staticContext);
       if (idField.isNull()) {
          return;
       }
 
-      std::string staticName(Element_::__staticName());
+      std::string staticName(Element_::CTRL_staticName());
       if (PolymorphicSerializer::instance().isPolymorph(staticName)) {
          std::string className;
          buffer.readTypeId(className, staticContext);
@@ -551,14 +551,14 @@ namespace Private {
 
    template <class Element_>
    void deserialize(Element_*& ptr, AbstractReadBuffer& buffer, int version, const Context& context) throw(Exception) {
-      Context staticContext(context, Element_::__staticContext());
+      Context staticContext(context, Element_::CTRL_staticContext());
       IdField idField = staticContext.getClassContext().getRootIdField();
       idField.read(buffer, staticContext);
       if (idField.isNull()) {
          return;
       }
 
-      std::string staticName(Element_::__staticName());
+      std::string staticName(Element_::CTRL_staticName());
       if (buffer.getRawPointerRepository().isRegistered(idField)) {
          void* p = buffer.getRawPointerRepository().get(idField);
 

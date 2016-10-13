@@ -44,7 +44,7 @@ namespace Private {
          try {
             ptr = new ConcreteClass_();
             idField.assign(reinterpret_cast<void*>(ptr), className);
-            ctrl::Private::deserialize(*ptr, buffer, version, Context(context, ptr->__dynamicContext()));
+            ctrl::Private::deserialize(*ptr, buffer, version, Context(context, ptr->CTRL_dynamicContext()));
             return reinterpret_cast<void*>(ptr);
          }
          catch(...) { delete ptr; throw; }

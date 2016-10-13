@@ -1,13 +1,14 @@
 # C++ Template Reflection Library
 
-CTRL adds data member reflection to C++ using template meta-programming techniques and the standard C++ preprocessor. 
-This reflection is used to implement serialize and deserialize functions. Both binary and XML formats are supported. 
+CTRL adds data member reflection to C++ using template meta-programming techniques and the standard C++ preprocessor.
+This reflection is used to implement serialize and deserialize functions. Both binary and XML formats are supported.
 Since it uses the standard preprocessor no special preprocessor is needed to use CTRL.
 
 ## Requirements
 
-This library depends on the [boost](http://www.boost.org/) library. It also depends on 
-[rapidxml](http://rapidxml.sourceforge.net/), but it is included in the distribution, so no download is required.
+This library depends on the [boost](http://www.boost.org/) library, for shared_ptr and weak_ptr, endian and locale support.
+It also depends on [rapidxml](http://rapidxml.sourceforge.net/) and [nlohmann/json](https://github.com/nlohmann/json), but
+both are included in the distribution, so no download is required.
 
 ## Instalation
 
@@ -41,35 +42,35 @@ class SimpleClass
 };
 ```
 
-The CTRL_BEGIN_MEMBERS macro defines a default constructor so you can't define it yourself. You can put these macro's 
-anywhere in the class and not every line between CTRL_BEGIN_MEMBERS and CTRL_END_MEMBERS needs to contain a call to 
-CTRL_MEMBER. So a CTRL_MEMBER call can take up multiple lines. You can use all the basic types and std::string and 
-std::wstring as members. You can also use smart pointers and standard containers, these are explained later on. First 
+The CTRL_BEGIN_MEMBERS macro defines a default constructor so you can't define it yourself. You can put these macro's
+anywhere in the class and not every line between CTRL_BEGIN_MEMBERS and CTRL_END_MEMBERS needs to contain a call to
+CTRL_MEMBER. So a CTRL_MEMBER call can take up multiple lines. You can use all the basic types and std::string and
+std::wstring as members. You can also use smart pointers and standard containers, these are explained later on. First
 lets look at the serialize and deserialize functions.
 
 ```cpp
 int main(void)
 {
     SimpleClass obj;
-    
+
     long length = 0;
     char* data = ctrl::toBinary(obj, length);
     SimpleClass* ptr = ctrl::fromBinary<SimpleClass>(data, length);
-    delete ptr; 
+    delete ptr;
     delete[] data;
-    
+
     std::string str = ctrl::toXml(obj);
     ptr = ctrl::fromXml<SimpleClass>(str);
-    delete ptr; 
+    delete ptr;
 }
 ```
 
-As you can see the toBinary function takes a const reference to the object and a reference to a long as input 
-parameters. This long is filled in to give the length of the serialized data. The fromBinary function returns a 
-pointer to an on heap allocated object. It's up to you to do the memory management of this object. If the amount of 
+As you can see the toBinary function takes a const reference to the object and a reference to a long as input
+parameters. This long is filled in to give the length of the serialized data. The fromBinary function returns a
+pointer to an on heap allocated object. It's up to you to do the memory management of this object. If the amount of
 data that is consumed by fromBinary doesn't match the length that is passed in, an exception is thrown.
 
-The toXml function takes a const reference to the object and opionally a boolean indicating that pretty printing should 
+The toXml function takes a const reference to the object and opionally a boolean indicating that pretty printing should
 be used. The fromXml function takes a const string reference as argument and again returns an on heap allocated
 object.
 
@@ -85,7 +86,7 @@ class CompositeClass
 };
 ```
 
-As smart pointers you can use std::auto_ptr, std::unique_ptr, std::shared_ptr, std::weak_ptr, boost::shared_ptr and 
+As smart pointers you can use std::auto_ptr, std::unique_ptr, std::shared_ptr, std::weak_ptr, boost::shared_ptr and
 boost::weak_ptr. Of course you can also use raw pointers.
 
 ```cpp
@@ -115,8 +116,8 @@ class ContainerClass
 };
 ```
 
-As you can see the example for the map is a bit more involving, you need to define a typedef first. This is always the 
-case if you want to use types that have multiple template parameters. You can combine all types of members, so you can 
+As you can see the example for the map is a bit more involving, you need to define a typedef first. This is always the
+case if you want to use types that have multiple template parameters. You can combine all types of members, so you can
 have a vector of shared_ptr.
 
 Furthermore std::pair, std::complex and std::valarray are also supported.
@@ -136,8 +137,8 @@ class DerivedClass : public CompositeClass
 };
 ```
 
-If you want to use a derived class in a polymorphic way, eg. store pointers to the base class, you need to use the 
-macros CTRL_POLYMORPH (for publicly constructable classes) and CTRL_ABSTRACT_POLYMOPRH (for abstract and non publicly 
+If you want to use a derived class in a polymorphic way, eg. store pointers to the base class, you need to use the
+macros CTRL_POLYMORPH (for publicly constructable classes) and CTRL_ABSTRACT_POLYMOPRH (for abstract and non publicly
 constructable classes). These have to be put in the *.cpp file.
 
 ```cp
@@ -159,9 +160,9 @@ class MultipleClass : public CompositeClass, public PointerClass
 };
 ```
 
-If you want to use multiple inheritance in a polymorphic way, it gets a bit more complicated. You still need to call 
-CTRL_POLYMORPH for all the base classes (that can be publicly constructed), but for the derived class you need to 
-call a special macro CTRL_POLYMORPH_MULTIPLE_X where X is the number of direct and indirect base classes. The first 
+If you want to use multiple inheritance in a polymorphic way, it gets a bit more complicated. You still need to call
+CTRL_POLYMORPH for all the base classes (that can be publicly constructed), but for the derived class you need to
+call a special macro CTRL_POLYMORPH_MULTIPLE_X where X is the number of direct and indirect base classes. The first
 argument of this macro is the derived class, the following arguments are all the base classes in any order.
 
 ```cpp
@@ -174,7 +175,7 @@ CTRL_POLYMORPH_MULTIPLE_2(MultipleClass, CompositeClass, PointerClass)
 
 ### Initialization
 
-If you need to do some initialization after an object is deserialized, you can do this by adding a static __initialize 
+If you need to do some initialization after an object is deserialized, you can do this by adding a static __initialize
 member function to the class.
 
 ```cpp
@@ -200,8 +201,8 @@ This initialize function is called for all the base classes in the correct order
 
 ### Binary serialization features
 
-You can also set the memory alignment and endian type when you call a toBinary or fromBinary function. Using the 
-platform memory alignment (the default) gives the best performance but results in larger files. For the smallest file 
+You can also set the memory alignment and endian type when you call a toBinary or fromBinary function. Using the
+platform memory alignment (the default) gives the best performance but results in larger files. For the smallest file
 use an alignment of 1. For endian support you can use the macro's CTRL_LITTLE_ENDIAN and CTRL_BIG_ENDIAN.
 
 ```cpp
@@ -211,8 +212,8 @@ int main(void)
     long length = 0;
     char* data = ctrl::toBinary<4, CTRL_LITTLE_ENDIAN>(obj, length);
     SimpleClass* ptr = ctrl::fromBinary<SimpleClass, 4, CTRL_LITTLE_ENDIAN>(data, length);
-    delete ptr; 
-    delete[] data; 
+    delete ptr;
+    delete[] data;
 }
 ```
 
@@ -239,7 +240,7 @@ private:
 
 #### CTRL_WITH_NAME(_name_)
 
-The with name macro on a member controls the name used for the xml element. On a class it controls the type id used 
+The with name macro on a member controls the name used for the xml element. On a class it controls the type id used
 when the class is polymorph.
 
 #### CTRL_AS_ATTRIBUTE()
@@ -249,8 +250,8 @@ member gets serialized as xml attribute instead of as an element.
 
 #### CTRL_TYPE_ID_FIELD_NAME(_name_)
 
-This macro has to be used on the root of a single inheritance hierarchy (on the class, not a member), if used with 
-multiple inheritance it results in an error. It controls the name of the element that is used to store the type id in 
+This macro has to be used on the root of a single inheritance hierarchy (on the class, not a member), if used with
+multiple inheritance it results in an error. It controls the name of the element that is used to store the type id in
 the case of polymorphic classes.
 
 #### CTRL_TYPE_ID_FIELD_AS_ATTRIBUTE()
@@ -291,17 +292,17 @@ int main(void)
     long length = 0;
     char* data = ctrl::toBinary(obj, length, 1);
     SimpleClass* ptr = ctrl::fromBinary<SimpleClass>(data, length, 1);
-    delete ptr; 
-    delete[] data; 
+    delete ptr;
+    delete[] data;
 }
 ```
 
-In this example the float doesn't get serialized or deserialized because it has version 2. You can still initialize it 
-afterwards with an initialize function. 
+In this example the float doesn't get serialized or deserialized because it has version 2. You can still initialize it
+afterwards with an initialize function.
 
 ## Template meta-programming
 
-The template mechanism in C++ is turing complete. You can use typedefs and enums as variables, with recursive 
+The template mechanism in C++ is turing complete. You can use typedefs and enums as variables, with recursive
 instantiation you can create repition structures and with template specialization you can create choice structures.
 Lets define some concepts that we will use later on.
 
@@ -341,7 +342,7 @@ public:
         // do something with TypeList_::Head
         RecursiveCall::call(TypeList_::Tail());
     }
-    
+
     void call(NullType list) {
         // empty implementation terminates the recursive call
     }
@@ -360,32 +361,32 @@ class Select {
 public:
     typedef TrueType_ Result;
 };
-    
+
 template <class TrueType_, class FalseType_>
 class Select<false, TrueType_, FalseType_> {
 public:
     typedef FalseType_ Result;
-};    
+};
 ```
 
 ## Design
 
-Our goal is to achieve transparent serialization of user defined types. To achieve this we need a way to access the 
-members of an object without knowing the number of members and the names of these members. Accessing a member without 
-using its name can be done using a pointer to member. For each member we could add a 'getMemberPtr' function to the 
+Our goal is to achieve transparent serialization of user defined types. To achieve this we need a way to access the
+members of an object without knowing the number of members and the names of these members. Accessing a member without
+using its name can be done using a pointer to member. For each member we could add a 'getMemberPtr' function to the
 user class. To differenciate between the getMemberPtr functions we could give each a unique Int2Type as parameter.
 If we store these Int2Types in a TypeList we can use a recursive template algorithm to traverse them.
 
-Lets try to define preprocessor macros to implement this functionality. We can make some observations. We need a macro 
-to add a member. Since this macro will need the name of the user class (to define the pointer to member), it would 
-be usefull to pass this name in a separate macro. Finally we also need a macro to add the type list. Lets name these 
+Lets try to define preprocessor macros to implement this functionality. We can make some observations. We need a macro
+to add a member. Since this macro will need the name of the user class (to define the pointer to member), it would
+be usefull to pass this name in a separate macro. Finally we also need a macro to add the type list. Lets name these
 macros BEGIN_MEMBERS, ADD_MEMBER and END_MEMBERS.
 
 ```cpp
 #define BEGIN_MEMBERS(ConcreteClass_)        \
 private:                                     \
    typedef ConcreteClass_ ConcreteClass;
-   
+
 
 #define ADD_MEMBER(DataType, name, nb)                      \
 private:                                                    \
@@ -398,7 +399,7 @@ public:                                                     \
    }
 ```
 
-The END_MEMBERS macro will need to create the TypeList typedef. If we enforce that the user has to enumerate his 
+The END_MEMBERS macro will need to create the TypeList typedef. If we enforce that the user has to enumerate his
 members starting with zero, a recursive template algorithm taking the number of members could create the TypeList.
 
 ```cpp
@@ -411,7 +412,7 @@ template <class TList_, int nb_>
 struct CreateMemberIndicesImpl
 {
    typedef Typelist<Int2Type<nb_>, TList_> NewTList;
-   
+
    typedef typename CreateMemberIndicesImpl<NewTList, nb_ - 1>::Result Result;
 };
 
@@ -462,7 +463,7 @@ void serialize(ostream& stream, UserClass_* ptr)
 }
 ```
 
-In the previous code, when serialize is called for the RecursiveSerialization instantiation, it calls serialize for 
+In the previous code, when serialize is called for the RecursiveSerialization instantiation, it calls serialize for
 each element in the TypeList.
 
 We can now use these macros as follows.
@@ -477,11 +478,11 @@ class UserClass
 };
 ```
 
-This already is quite simple, but it isn't simple enough. In particular, the user has to pass a number to each 
-ADD_MEMBER call. Also, each time a new member is added to a user class the call to END_MEMBERS needs to be changed. 
+This already is quite simple, but it isn't simple enough. In particular, the user has to pass a number to each
+ADD_MEMBER call. Also, each time a new member is added to a user class the call to END_MEMBERS needs to be changed.
 Lets see if we can't simplify this further.
 
-Instead of passing the number to ADD_MEMBER, the macro could use the line number as the unique integer. This means that 
+Instead of passing the number to ADD_MEMBER, the macro could use the line number as the unique integer. This means that
 each ADD_MEMBER call must have its own line, but that isn't a problem.
 
 ```cpp
@@ -496,9 +497,9 @@ public:                                                           \
    }
 ```
 
-If we want to use this macro we will need another mechanism to create the TypeList. Since all ADD_MEMBER macros are 
-enclosed within the BEGIN_MEMBERS and END_MEMBERS calls, we could let them create two enums, startLine and endLine 
-respectively, holding the line number. These could then be passed to the template algorithm instanciated by 
+If we want to use this macro we will need another mechanism to create the TypeList. Since all ADD_MEMBER macros are
+enclosed within the BEGIN_MEMBERS and END_MEMBERS calls, we could let them create two enums, startLine and endLine
+respectively, holding the line number. These could then be passed to the template algorithm instanciated by
 END_MEMBERS. The new template algorithm looks something like this.
 
 ```cpp
@@ -506,9 +507,9 @@ template <class TList_, int startLine_, int endLine_>
 struct CreateMemberIndicesImpl
 {
    typedef Loki::Typelist<Loki::Int2Type<startLine_>, TList_> NewTList;
-   
-   typedef typename CreateMemberIndicesImpl< NewTList, 
-                                             startLine_ + 1, 
+
+   typedef typename CreateMemberIndicesImpl< NewTList,
+                                             startLine_ + 1,
                                              endLine_ >::Result Result;
 };
 
@@ -522,20 +523,20 @@ struct CreateMemberIndicesImpl<TList_, endLine_, endLine_>
 template <int startLine_, int endLine_>
 struct CreateMemberIndices
 {
-   typedef typename CreateMemberIndicesImpl< Loki::NullType, 
-                                             startLine_ + 1, 
+   typedef typename CreateMemberIndicesImpl< Loki::NullType,
+                                             startLine_ + 1,
                                              endLine_ >::Result Result;
 };
 ```
 
-Using this algorithm, every line between the begin and end members macros must contain an ADD_MEMBER call. This means 
-that no single ADD_MEMBER call may occupy two lines. This isn't flexible enough, so we need a mechanism to check line 
+Using this algorithm, every line between the begin and end members macros must contain an ADD_MEMBER call. This means
+that no single ADD_MEMBER call may occupy two lines. This isn't flexible enough, so we need a mechanism to check line
 numbers before adding them to the TypeList.
 
-Template specialization could do the trick here. If the BEGIN_MEMBERS macro would create a template class 
-IsMemberPresent, taking an integer and defining an enum as false; then ADD_MEMBER could specialize it, defining the 
-enum as true. But since explicit template specialization isn't allowed inside class bodies, we will need to use partial 
-template specialization. Furthermore, if the CreateMemberIndices algorithm wants to access this class it will also need 
+Template specialization could do the trick here. If the BEGIN_MEMBERS macro would create a template class
+IsMemberPresent, taking an integer and defining an enum as false; then ADD_MEMBER could specialize it, defining the
+enum as true. But since explicit template specialization isn't allowed inside class bodies, we will need to use partial
+template specialization. Furthermore, if the CreateMemberIndices algorithm wants to access this class it will also need
 the user class type. These are the new macros:
 
 ```cpp
@@ -576,14 +577,14 @@ template <class TList_, int startLine_, int endLine_, class ConcreteClass_>
 struct CreateMemberIndicesImpl
 {
    enum { isMemberPresent = ConcreteClass_::IsMemberPresent<startLine_>::value };
-   
-   typedef typename Select< isMemberPresent, 
-                            Typelist<Int2Type<startLine_>, TList_>, 
+
+   typedef typename Select< isMemberPresent,
+                            Typelist<Int2Type<startLine_>, TList_>,
                             TList_ >::Result NewTList;
-   
-   typedef typename CreateMemberIndicesImpl< NewTList, 
-                                             startLine_ + 1, 
-                                             endLine_, 
+
+   typedef typename CreateMemberIndicesImpl< NewTList,
+                                             startLine_ + 1,
+                                             endLine_,
                                              ConcreteClass_ >::Result Result;
 };
 
@@ -597,9 +598,9 @@ struct CreateMemberIndicesImpl<TList_, endLine_, endLine_, ConcreteClass_>
 template <int startLine_, int endLine_, class ConcreteClass_>
 struct CreateMemberIndices
 {
-   typedef typename CreateMemberIndicesImpl< Loki::NullType, 
-                                             startLine_ + 1, 
-                                             endLine_, 
+   typedef typename CreateMemberIndicesImpl< Loki::NullType,
+                                             startLine_ + 1,
+                                             endLine_,
                                              ConcreteClass_ >::Result Result;
 };
 ```

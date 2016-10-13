@@ -44,7 +44,7 @@ namespace Private {
       WeakPtrWrapperImpl(Weak_<Element_>& ptr) : m_ptr(ptr) { }
 
       virtual void assign(const Shared_<void>& ptr, const std::string& sharedName) {
-         std::string weakName = Element_::__staticName();
+         std::string weakName = Element_::CTRL_staticName();
          void* p = ptr.get();
 
          if (PolymorphicSerializer::instance().hasCast(sharedName, weakName))

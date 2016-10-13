@@ -36,6 +36,7 @@
 #include <ctrl/platformFormat.h>
 #include <ctrl/buffer/binaryWriteBufferImpl.h>
 #include <ctrl/buffer/xmlWriteBuffer.h>
+#include <ctrl/buffer/jsonWriteBuffer.h>
 
 namespace ctrl {
 
@@ -71,15 +72,22 @@ std::string toXml(const ConcreteClass_& object, bool prettyPrint = false, int ve
    return buffer.getOutput();
 }
 
+template <class ConcreteClass_>
+std::string toJson(const ConcreteClass_& object, int indentation = 0) {
+   Private::JsonWriteBuffer buffer(indentation);
+   toWriteBuffer(object, buffer, 1);
+   return buffer.getOutput();
+}
+
 namespace Private {
 
    template <class ConcreteClass_>
    void serialize(const ConcreteClass_& object, AbstractWriteBuffer& buffer, int version, const Context& context) {
       buffer.enterObject(context);
-      typedef typename ConcreteClass_::__BaseClasses BaseClasses;
+      typedef typename ConcreteClass_::CTRL_BaseClasses BaseClasses;
       BaseClassSerializer<ConcreteClass_>::serialize(object, BaseClasses(), buffer, version, context);
 
-      typedef typename ConcreteClass_::__MemberIndices Indices;
+      typedef typename ConcreteClass_::CTRL_MemberIndices Indices;
       ClassSerializer<ConcreteClass_>::serialize(object, Indices(), buffer, version, context);
       buffer.leaveObject(context);
    }
@@ -330,18 +338,18 @@ namespace Private {
    template <class Element_>
    void serialize(const boost::shared_ptr<Element_>& ptr, AbstractWriteBuffer& buffer, int version, const Context& context) {
       if (ptr.get() == 0) {
-         Context staticContext(context, Element_::__staticContext());
+         Context staticContext(context, Element_::CTRL_staticContext());
          buffer.enterIdField(staticContext);
          buffer.appendNullId(staticContext);
          buffer.leaveIdField(staticContext);
          return;
       }
       void* p = reinterpret_cast<void*>(ptr.get());
-      std::string staticName = Element_::__staticName();
-      std::string dynamicName = ptr->__dynamicName();
+      std::string staticName = Element_::CTRL_staticName();
+      std::string dynamicName = ptr->CTRL_dynamicName();
       p = PolymorphicSerializer::instance().cast(staticName, dynamicName, p);
 
-      Context dynamicContext(context, ptr->__dynamicContext());
+      Context dynamicContext(context, ptr->CTRL_dynamicContext());
       IdField idField = dynamicContext.getClassContext().getRootIdField();
 
       if (buffer.getPointerRepository().isRegistered(p)) {
@@ -357,7 +365,7 @@ namespace Private {
          idField.write(p, dynamicName, buffer, dynamicContext);
          if (PolymorphicSerializer::instance().isPolymorph(dynamicName)) {
             buffer.appendTypeId(dynamicName, dynamicContext);
-            ptr->__serialize(buffer, version, dynamicContext);
+            ptr->CTRL_serialize(buffer, version, dynamicContext);
          } else {
             serialize(*ptr, buffer, version, dynamicContext);
          }
@@ -368,18 +376,18 @@ namespace Private {
    void serialize(const boost::weak_ptr<Element_>& ptr, AbstractWriteBuffer& buffer, int version, const Context& context) {
       boost::shared_ptr<Element_> shared = ptr.lock();
       if (shared.get() == 0) {
-         Context staticContext(context, Element_::__staticContext());
+         Context staticContext(context, Element_::CTRL_staticContext());
          buffer.enterIdField(staticContext);
          buffer.appendNullId(staticContext);
          buffer.leaveIdField(staticContext);
          return;
       }
       void* p = reinterpret_cast<void*>(shared.get());
-      std::string staticName = Element_::__staticName();
-      std::string dynamicName = shared->__dynamicName();
+      std::string staticName = Element_::CTRL_staticName();
+      std::string dynamicName = shared->CTRL_dynamicName();
       p = PolymorphicSerializer::instance().cast(staticName, dynamicName, p);
 
-      Context dynamicContext(context, shared->__dynamicContext());
+      Context dynamicContext(context, shared->CTRL_dynamicContext());
       IdField idField = dynamicContext.getClassContext().getRootIdField();
 
       if (buffer.getPointerRepository().isRegistered(p)) {
@@ -393,18 +401,18 @@ namespace Private {
    template <class Element_>
    void serialize(const std::shared_ptr<Element_>& ptr, AbstractWriteBuffer& buffer, int version, const Context& context) {
       if (ptr.get() == 0) {
-         Context staticContext(context, Element_::__staticContext());
+         Context staticContext(context, Element_::CTRL_staticContext());
          buffer.enterIdField(staticContext);
          buffer.appendNullId(staticContext);
          buffer.leaveIdField(staticContext);
          return;
       }
       void* p = reinterpret_cast<void*>(ptr.get());
-      std::string staticName = Element_::__staticName();
-      std::string dynamicName = ptr->__dynamicName();
+      std::string staticName = Element_::CTRL_staticName();
+      std::string dynamicName = ptr->CTRL_dynamicName();
       p = PolymorphicSerializer::instance().cast(staticName, dynamicName, p);
 
-      Context dynamicContext(context, ptr->__dynamicContext());
+      Context dynamicContext(context, ptr->CTRL_dynamicContext());
       IdField idField = dynamicContext.getClassContext().getRootIdField();
 
       if (buffer.getPointerRepository().isRegistered(p)) {
@@ -420,7 +428,7 @@ namespace Private {
          idField.write(p, dynamicName, buffer, dynamicContext);
          if (PolymorphicSerializer::instance().isPolymorph(dynamicName)) {
             buffer.appendTypeId(dynamicName, dynamicContext);
-            ptr->__serialize(buffer, version, dynamicContext);
+            ptr->CTRL_serialize(buffer, version, dynamicContext);
          } else {
             serialize(*ptr, buffer, version, dynamicContext);
          }
@@ -431,18 +439,18 @@ namespace Private {
    void serialize(const std::weak_ptr<Element_>& ptr, AbstractWriteBuffer& buffer, int version, const Context& context) {
       std::shared_ptr<Element_> shared = ptr.lock();
       if (shared.get() == 0) {
-         Context staticContext(context, Element_::__staticContext());
+         Context staticContext(context, Element_::CTRL_staticContext());
          buffer.enterIdField(staticContext);
          buffer.appendNullId(staticContext);
          buffer.leaveIdField(staticContext);
          return;
       }
       void* p = reinterpret_cast<void*>(shared.get());
-      std::string staticName = Element_::__staticName();
-      std::string dynamicName = shared->__dynamicName();
+      std::string staticName = Element_::CTRL_staticName();
+      std::string dynamicName = shared->CTRL_dynamicName();
       p = PolymorphicSerializer::instance().cast(staticName, dynamicName, p);
 
-      Context dynamicContext(context, shared->__dynamicContext());
+      Context dynamicContext(context, shared->CTRL_dynamicContext());
       IdField idField = dynamicContext.getClassContext().getRootIdField();
 
       if (buffer.getPointerRepository().isRegistered(p)) {
@@ -456,24 +464,24 @@ namespace Private {
    template <class Element_>
    void serialize(const std::unique_ptr<Element_>& ptr, AbstractWriteBuffer& buffer, int version, const Context& context) {
       if (ptr.get() == 0) {
-         Context staticContext(context, Element_::__staticContext());
+         Context staticContext(context, Element_::CTRL_staticContext());
          buffer.enterIdField(staticContext);
          buffer.appendNullId(staticContext);
          buffer.leaveIdField(staticContext);
          return;
       }
       void* p = reinterpret_cast<void*>(ptr.get());
-      std::string staticName = Element_::__staticName();
-      std::string dynamicName = ptr->__dynamicName();
+      std::string staticName = Element_::CTRL_staticName();
+      std::string dynamicName = ptr->CTRL_dynamicName();
       p = PolymorphicSerializer::instance().cast(staticName, dynamicName, p);
 
-      Context dynamicContext(context, ptr->__dynamicContext());
+      Context dynamicContext(context, ptr->CTRL_dynamicContext());
       IdField idField = dynamicContext.getClassContext().getRootIdField();
       idField.write(p, dynamicName, buffer, dynamicContext);
 
       if (PolymorphicSerializer::instance().isPolymorph(dynamicName)) {
          buffer.appendTypeId(dynamicName, dynamicContext);
-         ptr->__serialize(buffer, version, dynamicContext);
+         ptr->CTRL_serialize(buffer, version, dynamicContext);
       } else {
          serialize(*ptr, buffer, version, dynamicContext);
       }
@@ -482,24 +490,24 @@ namespace Private {
    template <class Element_>
    void serialize(const std::auto_ptr<Element_>& ptr, AbstractWriteBuffer& buffer, int version, const Context& context) {
       if (ptr.get() == 0) {
-         Context staticContext(context, Element_::__staticContext());
+         Context staticContext(context, Element_::CTRL_staticContext());
          buffer.enterIdField(staticContext);
          buffer.appendNullId(staticContext);
          buffer.leaveIdField(staticContext);
          return;
       }
       void* p = reinterpret_cast<void*>(ptr.get());
-      std::string staticName = Element_::__staticName();
-      std::string dynamicName = ptr->__dynamicName();
+      std::string staticName = Element_::CTRL_staticName();
+      std::string dynamicName = ptr->CTRL_dynamicName();
       p = PolymorphicSerializer::instance().cast(staticName, dynamicName, p);
 
-      Context dynamicContext(context, ptr->__dynamicContext());
+      Context dynamicContext(context, ptr->CTRL_dynamicContext());
       IdField idField = dynamicContext.getClassContext().getRootIdField();
       idField.write(p, dynamicName, buffer, dynamicContext);
 
       if (PolymorphicSerializer::instance().isPolymorph(dynamicName)) {
          buffer.appendTypeId(dynamicName, dynamicContext);
-         ptr->__serialize(buffer, version, dynamicContext);
+         ptr->CTRL_serialize(buffer, version, dynamicContext);
       } else {
          serialize(*ptr, buffer, version, dynamicContext);
       }
@@ -508,18 +516,18 @@ namespace Private {
    template <class Element_>
    void serialize(Element_* ptr, AbstractWriteBuffer& buffer, int version, const Context& context) {
       if (ptr == 0) {
-         Context staticContext(context, Element_::__staticContext());
+         Context staticContext(context, Element_::CTRL_staticContext());
          buffer.enterIdField(staticContext);
          buffer.appendNullId(staticContext);
          buffer.leaveIdField(staticContext);
          return;
       }
       void* p = reinterpret_cast<void*>(ptr);
-      std::string staticName = Element_::__staticName();
-      std::string dynamicName = ptr->__dynamicName();
+      std::string staticName = Element_::CTRL_staticName();
+      std::string dynamicName = ptr->CTRL_dynamicName();
       p = PolymorphicSerializer::instance().cast(staticName, dynamicName, p);
 
-      Context dynamicContext(context, ptr->__dynamicContext());
+      Context dynamicContext(context, ptr->CTRL_dynamicContext());
       IdField idField = dynamicContext.getClassContext().getRootIdField();
 
       if (buffer.getPointerRepository().isRegistered(p)) {
@@ -530,7 +538,7 @@ namespace Private {
          idField.write(p, dynamicName, buffer, dynamicContext);
          if (PolymorphicSerializer::instance().isPolymorph(dynamicName)) {
             buffer.appendTypeId(dynamicName, dynamicContext);
-            ptr->__serialize(buffer, version, dynamicContext);
+            ptr->CTRL_serialize(buffer, version, dynamicContext);
          } else {
             serialize(*ptr, buffer, version, dynamicContext);
          }
