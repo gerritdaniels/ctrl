@@ -34,6 +34,7 @@
 #include <ctrl/polymorphicSerializer.h>
 #include <ctrl/buffer/binaryReadBufferImpl.h>
 #include <ctrl/buffer/xmlReadBuffer.h>
+#include <ctrl/buffer/jsonReadBuffer.h>
 #include <ctrl/platformFormat.h>
 #include <ctrl/exception.h>
 #include <ctrl/context.h>
@@ -81,6 +82,12 @@ template <class ConcreteClass_>
 ConcreteClass_* fromXml(const std::string& data, int version = 1) throw(Exception) {
    Private::XmlReadBuffer buffer(data);
    return fromReadBuffer<ConcreteClass_>(buffer, version);
+}
+
+template <class ConcreteClass_>
+ConcreteClass_* fromJson(const std::string& data) throw(Exception) {
+   Private::JsonReadBuffer buffer(data);
+   return fromReadBuffer<ConcreteClass_>(buffer, 1);
 }
 
 namespace Private {

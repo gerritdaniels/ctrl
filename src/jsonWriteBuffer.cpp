@@ -185,15 +185,7 @@ void JsonWriteBuffer::appendTypeId(const std::string& val, const Context& contex
 }
 
 void JsonWriteBuffer::append(const bool& val, const Context& context) throw(Exception) {
-   if (m_keyStart) {
-      if (!(*m_stack.top())[val ? "true" : "false"].is_null()) {
-         throw Exception("Multimaps with duplicated keys aren't supported when serializing to JSON");
-      }
-      (*m_stack.top())[val ? "true" : "false"] = json();
-      m_stack.push(&(*m_stack.top())[val ? "true" : "false"]);
-   } else if (!m_skipNextFundamental) {
-      (*m_stack.top()) = val ? "true" : "false";
-   }
+   appendNumber(val);
 }
 
 

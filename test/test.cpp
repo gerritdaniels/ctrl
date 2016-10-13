@@ -80,6 +80,10 @@ bool testSerialization(const T& obj, bool multimapJsonException = false) {
    try {
       std::string json = ctrl::toJson(obj, 4);
       std::cout << json << std::endl;
+      newObj = ctrl::fromJson<T>(json);
+      if (!testAndDelete(newObj, obj, 0)) {
+         return false;
+      }
    } catch (ctrl::Exception ex) {
       if (!multimapJsonException || std::string(ex.what()) != "Multimaps with duplicated keys aren't supported when serializing to JSON") {
          throw ex;

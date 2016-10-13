@@ -12,7 +12,8 @@ add_library(ctrl SHARED
                 src/writePointerRepository.cpp
                 src/abstractReadBuffer.cpp
                 src/binaryReadBuffer.cpp
-                src/xmlReadBuffer.cpp)
+                src/xmlReadBuffer.cpp
+                src/jsonReadBuffer.cpp)
 target_include_directories(ctrl PUBLIC include)
 set_property(TARGET ctrl PROPERTY CXX_STANDARD 11)
 
